@@ -32,62 +32,56 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');
 });
 
-// Get all members
-app.get('/api/get_member_list', async (req, res) => {
+// Get all players
+app.get('/api/get_player_list', async (req, res) => {
     try {
-        console.log("SERVER: get_member_list called");
+        console.log("SERVER: get_player_list called");
 
         const db = await getDatabase();
-        const membersCollection = db.collection('members');
-        const members = await membersCollection.find({}).toArray();
+        const playersCollection = db.collection('players');
+        const players = await playersCollection.find({}).sort({ firstName: 1, lastName: 1 }).toArray();
 
-        res.json(members);
+        res.json(players);
     } catch (error) {
-        console.error('Error fetching members:', error);
-        res.status(500).json({ error: 'Failed to fetch members', details: error.message });
+        console.error('Error fetching players:', error);
+        res.status(500).json({ error: 'Failed to fetch players', details: error.message });
     }
 });
 
-// Add new member
-app.post('/api/new_member', async function(req, res) {
+// Add new player
+app.post('/api/new_player', async function(req, res) {
     try {
-        console.log("SERVER: post_new_member called");
-        const newMember = req.body;
-        console.log(newMember);
+        console.log("SERVER: post_new_player called");
+        const { firstName, lastName, dateOfBirth, email, password} = req.body;
 
         const db = await getDatabase();
-        const membersCollection = db.collection('members');
-        await membersCollection.insertOne(newMember);
+        const playersCollection = db.collection('players');
 
-        res.redirect('/');
-    } catch (error) {
-        console.error('Error adding member:', error);
-        res.status(500).json({ error: 'Failed to add member', details: error.message });
-    }
-});
+        // Check if player already exists
+        const existingplayer = await playersCollection.findOne({
+            email: email.trim(),
+        });
 
-// Replace entire member list (for sorting persistence)
-app.post('/api/set_member_list', async function(req, res) {
-    try {
-        console.log("SERVER: set_member_list called");
-        const members = req.body.members;
-        console.log(members);
-
-        const db = await getDatabase();
-        const membersCollection = db.collection('members');
-
-        // Delete all existing members
-        await membersCollection.deleteMany({});
-
-        // Insert new sorted list
-        if (members && members.length > 0) {
-            await membersCollection.insertMany(members);
+        if (existingplayer) {
+            return res.status(400).json({ error: 'player already exists' });
         }
 
+        const newPlayer = {
+            firstName: firstName,
+            lastName: lastName,
+            dateOfBirth: new Date(dateOfBirth),
+            email: email,
+            password: password,
+            teamId: null
+        }
+
+        const result = await playersCollection.insertOne(newPlayer);
+        console.log("succesfully added player: ", result);
+
         res.redirect('/');
     } catch (error) {
-        console.error('Error setting member list:', error);
-        res.status(500).json({ error: 'Failed to set member list', details: error.message });
+        console.error('Error adding player:', error);
+        res.status(500).json({ error: 'Failed to add player', details: error.message });
     }
 });
 

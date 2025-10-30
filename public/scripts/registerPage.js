@@ -3,8 +3,8 @@
 const makeTeamButton = document.getElementById('makeTeam');
 makeTeamButton.addEventListener('click', makeNewTeam);
 
-async function getMemberList(){
-    const response = await fetch("/api/get_member_list");
+async function getPlayerList(){
+    const response = await fetch("/api/get_player_list");
     return await response.json();
 }
 
@@ -12,10 +12,10 @@ async function makeNewTeam() {
     console.log("Make New Team button pressed");
     const teamForm = document.getElementById('team-form');
     teamForm.classList.toggle('visually-hidden');
-    let membersList;
+    let playersList;
     if (!teamForm.classList.contains('visually-hidden')) {
-        membersList = await getMemberList();
-        await fillDropdown(membersList);
+        playersList = await getPlayerList();
+        await fillDropdown(playersList);
     }
 }
 
@@ -30,20 +30,20 @@ refreshTeamMateList.onclick = async function () {
 // fill drop down for teammate selection
 async function fillDropdown() {
     // get the dropdown element where the options need to be added
-    const dropdown = document.getElementById('membersDropdown');
+    const dropdown = document.getElementById('playersDropdown');
 
-    let members = await getMemberList();
+    let players = await getPlayerList();
 
     // remove all the previous options
     while (dropdown.options.length > 1) {
-        dropdown.remove(1);
+        dropdown.remove();
     }
 
     // make new options for each player
-    for (let i = 0; i < members.length; i++) {
+    for (let i = 0; i < players.length; i++) {
         let option = document.createElement('option');
-        option.value = members[i].fname;
-        option.textContent = `${members[i].fname} ${members[i].lname}`;
+        option.value = players[i].fname;
+        option.textContent = `${players[i].firstName} ${players[i].lastName}`;
         dropdown.appendChild(option);
     }
 }

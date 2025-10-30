@@ -24,8 +24,6 @@
 <body>
     <div class="container-xxl p-0">
 
-
-
         <!-- Navbar & Hero Start -->
         <div class="container-xxl position-relative p-0">
             <div id="nav-placeholder"></div>
@@ -37,22 +35,51 @@
         <div class="container-xxl px-0 bg-dark" >
                 <div class="py-5 bg-dark d-flex align-items-center" style="min-height: 100vh !important;">
                     <div class="p-5 " >
-                        <h1 class="text-white mb-4">Register player</h1>
-                        <form method="POST" action="/api/new_member">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <input class="form-control" type="text" id="fname" name="fname"><br>
-                                        <label for="fname">First name:</label><br>
+                        <h1 class="text-white mb-4">Make your player account</h1>
+
+                        <div id="message-container"></div>
+
+                        <form method="POST" action="/api/new_player">
+                            <div class="row g-3 my-5">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input class="form-control" type="text" id="firstName" name="firstName" required><br>
+                                            <label for="firstName">First name:</label><br>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <input class="form-control" type="text" id="lname" name="lname"><br>
-                                        <label for="lname">Last name:</label><br>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input class="form-control" type="text" id="lastName" name="lastName" required><br>
+                                            <label for="lastName">Last name:</label><br>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input class="form-control" type="email" id="email" name="email" required><br>
+                                            <label for="email">Email:</label><br>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input class="form-control" type="date" id="dateOfBirth" name="dateOfBirth" required><br>
+                                            <label for="dateOfBirth">Date of birth:</label><br>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input class="form-control" type="password" id="password" name="password" required><br>
+                                            <label for="password">password:</label><br>
+                                        </div>
+                                    </div>
+                                </div>
+
+<!--                                <div class="row">
                                     <div class="col-md-6">
                                         <button type="button" id="makeTeam" class="btn btn-primary py-3 my-3">Make a new team</button>
                                     </div>
@@ -71,7 +98,7 @@
                                             <button type="button" class="btn btn-primary" id="refresh-team-list"><img alt="refresh icon" src="/images/refresh-icon.svg"></button>
                                         </div>
                                     </div>
-                                </div>
+                                </div>-->
 
                                 <!--<div class="col-md-6">
                                     <div class="form-floating">
