@@ -1,8 +1,26 @@
 /********** Template CSS **********/
+
 :root {
-    --primary: #FEA116;
-    --light: #F1F8FF;
-    --dark: #0F172B;
+    --primary: #FEA116 !important;
+    --light: #F1F8FF !important;
+    --dark: #0F172B !important;
+    --bs-text-primary: #FEA116 !important;
+    --text-primary: #FEA116 !important;
+}
+.text-primary {
+    color: var(--text-primary) !important;
+}
+
+body{
+   background-color: var(--dark);
+}
+.bg-dark{
+    background-color: var(--dark) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
 }
 
 .ff-secondary {
@@ -109,7 +127,8 @@
 }
 
 .sticky-top.navbar-dark .navbar-brand img {
-    max-height: 45px;
+    height: 100px;
+    width: 100px;
 }
 
 @media (max-width: 991.98px) {

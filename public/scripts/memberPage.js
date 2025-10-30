@@ -18,7 +18,7 @@ function fillTable(members) {
         
         cell1.innerHTML = members[i].fname;
         cell2.innerHTML = members[i].lname;
-        cell3.innerHTML = members[i].company;
+        cell3.innerHTML = members[i].team;
     }
 }
 
