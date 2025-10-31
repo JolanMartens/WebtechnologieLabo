@@ -11,50 +11,50 @@
 </head>
 
 <body>
-<div class="container-xxl p-0">
-    <!-- Navbar & Hero Start -->
-    <div class="container-xxl position-relative p-0">
-        <div id="nav-placeholder"></div>
-    </div>
-    <!-- Navbar & Hero End -->
+    <div class="container-xxl p-0">
+        <!-- Navbar & Hero Start -->
+        <div class="container-xxl position-relative p-0">
+            <div id="nav-placeholder"></div>
+        </div>
+        <!-- Navbar & Hero End -->
 
-    <!-- Login Form Start -->
-    <div class="container-xxl px-0 bg-dark">
-        <div class="py-5 bg-dark d-flex align-items-center justify-content-center" style="min-height: 100vh !important;">
-            <div class="p-5">
-                <h1 class="text-white mb-4">Inloggen</h1>
+        <!-- Login Form Start -->
+        <div class="container-xxl px-0 bg-dark">
+            <div class="py-5 bg-dark d-flex align-items-center justify-content-center" style="min-height: 100vh !important;">
+                <div class="p-5 my-5">
+                    <h1 class="text-white mb-5 ">Inloggen</h1>
 
-                <div id="message-container"></div>
+                    <div id="message-container"></div>
 
-                <form id="login-form">
-                    <div class="row g-3 my-5">
-                        <div class="col-12">
-                            <div class="form-floating">
-                                <input class="form-control" type="email" id="email" name="email" required>
-                                <label for="email">Email:</label>
+                    <form id="login-form">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input class="form-control" type="email" id="email" name="email" required>
+                                    <label for="email">Email:</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input class="form-control" type="password" id="password" name="password" required>
+                                    <label for="password">Wachtwoord:</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button class="btn btn-primary w-100 py-3" type="submit">Inloggen</button>
+                            </div>
+                            <div class="col-12 text-center">
+                                <p class="text-white">Nog geen account? <a href="registerPage.html" class="text-primary">Schrijf je in</a></p>
                             </div>
                         </div>
-                        <div class="col-12">
-                            <div class="form-floating">
-                                <input class="form-control" type="password" id="password" name="password" required>
-                                <label for="password">Wachtwoord:</label>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <button class="btn btn-primary w-100 py-3" type="submit">Inloggen</button>
-                        </div>
-                        <div class="col-12 text-center">
-                            <p class="text-white">Nog geen account? <a href="registerPage.html" class="text-primary">Schrijf je in</a></p>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
+        <!-- Login Form End -->
     </div>
-    <!-- Login Form End -->
-</div>
 
-<script src="/scripts/main.js"></script>
-<script src="/scripts/loginPage.js"></script>
+    <script src="/scripts/main.js"></script>
+    <script src="/scripts/loginPage.js"></script>
 </body>
 </html>

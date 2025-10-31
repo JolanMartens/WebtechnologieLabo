@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
 
-require('dotenv').config();
+require('dotenv').config(); // load environment values from .env file
 
 const app = express();
 const port = 3000;
@@ -16,18 +16,19 @@ const uri = process.env.MONGODB_URI;
 let client;
 let clientPromise;
 
-// Initialize MongoDB connection
+// Initialize MongoDB connection if there isn't one
 if (!client) {
     client = new MongoClient(uri);
     clientPromise = client.connect();
 }
 
-// Helper function to get database connection
+// return database
 async function getDatabase() {
-    const client = await clientPromise;
+    const client = await clientPromise; // wait for the connection
     return client.db('GentTennisWedstrijd');
 }
 
+// give the main htlml file when accessing root url
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');
 });
@@ -38,10 +39,11 @@ app.get('/api/get_player_list', async (req, res) => {
         console.log("SERVER: get_player_list called");
 
         const db = await getDatabase();
-        const playersCollection = db.collection('players');
-        const players = await playersCollection.find({}).sort({ firstName: 1, lastName: 1 }).toArray();
+        const playersCollection = db.collection('players'); // get players collection
+        const players = await playersCollection.find({}).sort({ firstName: 1, lastName: 1 }).toArray(); // get all players and sort by firstName and LastName
 
-        res.json(players);
+        res.json(players); // send player data back
+
     } catch (error) {
         console.error('Error fetching players:', error);
         res.status(500).json({ error: 'Failed to fetch players', details: error.message });
@@ -52,20 +54,21 @@ app.get('/api/get_player_list', async (req, res) => {
 app.post('/api/new_player', async function(req, res) {
     try {
         console.log("SERVER: post_new_player called");
-        const { firstName, lastName, dateOfBirth, email, password} = req.body;
 
+        const { firstName, lastName, dateOfBirth, email, password} = req.body; // get player data from body
         const db = await getDatabase();
         const playersCollection = db.collection('players');
 
-        // Check if player already exists
-        const existingplayer = await playersCollection.findOne({
-            email: email.trim(),
+        // Check if player with same email already exists
+        const existingPlayer = await playersCollection.findOne({
+            email: email.trim()
         });
 
-        if (existingplayer) {
+        if (existingPlayer) {
             return res.status(400).json({ error: 'player already exists' });
         }
 
+        // create new player object
         const newPlayer = {
             firstName: firstName,
             lastName: lastName,
@@ -75,14 +78,48 @@ app.post('/api/new_player', async function(req, res) {
             teamId: null
         }
 
-        const result = await playersCollection.insertOne(newPlayer);
+        const result = await playersCollection.insertOne(newPlayer); // insert player into database
+
         console.log("succesfully added player: ", result);
 
-        res.redirect('/');
+        res.redirect('/'); // go back to root
     } catch (error) {
         console.error('Error adding player:', error);
         res.status(500).json({ error: 'Failed to add player', details: error.message });
     }
+});
+
+// login
+app.post('/api/login', async function(req, res) {
+   try {
+       console.log("SERVER: post_login called");
+       const { email, password } = req.body;
+
+       const db = await getDatabase();
+       const playersCollection = db.collection('players');
+
+       const player = await playersCollection.findOne({email: email.trim()}); // find player by email
+
+       // give error when player or password is wrong
+       if (!player) {
+           return res.status(400).json({ error: 'Wachtwoord of Email is fout/bestaat niet' });
+       }
+       if (player.password !== password) {
+           return res.status(401).json({ error: 'Wachtwoord of Email is fout/bestaat niet' });
+       }
+
+       //send player data without password
+       const { password: _, ...playerData } = player;
+       res.json({
+           success: true,
+           player: playerData,
+           message: 'Login successful'
+       });
+
+   } catch (error) {
+       console.error('Error during login:', error);
+       res.status(500).json({ error: 'Login Failed', details: error.message });
+   }
 });
 
 // For local development
