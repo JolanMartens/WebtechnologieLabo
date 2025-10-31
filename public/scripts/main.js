@@ -28,7 +28,7 @@ myButton.onclick = function(){
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const gentCoords = [51.0416, 3.7160]; 
+  const gentCoords = [51.0443, 3.6881]; 
 
   if(document.getElementById('map')) {
     const map = L.map('map').setView(gentCoords, 15);
