@@ -27,12 +27,19 @@ myButton.onclick = function(){
   //setUserName();
 }
 
-const gentCoords = [51.0504, 3.7304];
-const map = L.map('map').setView(gentCoords, 15);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-}).addTo(map);
-L.marker(gentCoords).addTo(map)
-  .bindPopup('<b>Tennis Dubbelspel Gent</b><br>Blaarmeersen, Gent')
-  .openPopup();
+document.addEventListener('DOMContentLoaded', () => {
+  const gentCoords = [51.0416, 3.7160]; 
+
+  if(document.getElementById('map')) {
+    const map = L.map('map').setView(gentCoords, 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    L.marker(gentCoords).addTo(map)
+      .bindPopup('<b>Tennis Dubbelspel Gent</b><br>Blaarmeersen, Gent')
+      .openPopup();
+  }
+});
