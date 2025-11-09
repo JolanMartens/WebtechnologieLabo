@@ -20,6 +20,10 @@
       "dest": "/public/scripts/$1"
     },
     {
+      "src": "/(.*\\.(html|css|js|png|jpg|svg|webp|ico))",
+      "dest": "/public/$1"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "app.js"
     },
