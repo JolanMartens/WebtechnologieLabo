@@ -38,35 +38,35 @@ app.get('/', (req, res) => {
     res.render('index', { title: 'Home - Tennis dubbelspel tornooi' });
 });
 
-app.get('/index.html', (req, res) => {
+app.get('/index', (req, res) => {
     res.render('index', { title: 'Home - Tennis dubbelspel tornooi' });
 });
 
-app.get('/about.html', (req, res) => {
+app.get('/about', (req, res) => {
     res.render('about', { title: 'Over ons' });
 });
 
-app.get('/teams.html', (req, res) => {
+app.get('/teams', (req, res) => {
     res.render('teams', { title: 'Teams' });
 });
 
-app.get('/loginPage.html', (req, res) => {
+app.get('/loginPage', (req, res) => {
     res.render('loginPage', { title: 'Inloggen' });
 });
 
-app.get('/registerPage.html', (req, res) => {
+app.get('/registerPage', (req, res) => {
     res.render('registerPage', { title: 'Registreren' });
 });
 
-app.get('/allPlayers.html', (req, res) => {
+app.get('/allPlayers', (req, res) => {
     res.render('allPlayers', { title: 'Alle Spelers' });
 });
 
-app.get('/mijnAccountPage.html', (req, res) => {
+app.get('/mijnAccountPage', (req, res) => {
     res.render('mijnAccountPage', { title: 'Mijn Account' });
 });
 
-app.get('/jouwTeam.html', (req, res) => {
+app.get('/jouwTeam', (req, res) => {
     res.render('jouwTeam', { title: 'Jouw Team' });
 });
 

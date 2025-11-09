@@ -26,7 +26,7 @@ function getCurrentUser() {
 
 function requireLogin() {
     if (!isLoggedIn()) {
-        window.location.href = '/loginPage.html';
+        window.location.href = '/loginPage';
     }
 }
 
