@@ -1,0 +1,32 @@
+extends layout
+
+block content
+    .container-xxl.px-0.bg-dark
+        .py-5.bg-dark.d-flex.align-items-center.justify-content-center(style="min-height: 100vh !important;")
+            .p-5.my-5
+                h1.text-white.mb-5 Inloggen
+
+                #message-container
+
+                form#login-form
+                    .row.g-3
+                        .col-12
+                            .form-floating
+                                input.form-control(type="email" id="email" name="email" required)
+                                label(for="email") Email:
+
+                        .col-12
+                            .form-floating
+                                input.form-control(type="password" id="password" name="password" required)
+                                label(for="password") Wachtwoord:
+
+                        .col-12
+                            button.btn.btn-primary.w-100.py-3(type="submit") Inloggen
+
+                        .col-12.text-center
+                            p.text-white
+                                | Nog geen account?
+                                a.text-primary(href="/registerPage.html") Schrijf je in
+
+block scripts
+    script(src="/scripts/loginPage.js")

@@ -1,0 +1,55 @@
+extends layout
+
+block content
+    .container-xxl.px-0.bg-dark
+        .py-5.bg-dark.d-flex.align-items-center(style="min-height: 100vh !important;")
+            .p-5
+                h1.text-white.mb-4 Maak jouw spelersaccount aan
+
+                #message-container
+
+                form(method="POST" action="/api/new_player")
+                    .row.g-3.my-5
+                        .row
+                            .col-md-6
+                                .form-floating
+                                    input.form-control(type="text" id="firstName" name="firstName" required)
+                                    br
+                                    label(for="firstName") Voornaam:
+                                    br
+
+                            .col-md-6
+                                .form-floating
+                                    input.form-control(type="text" id="lastName" name="lastName" required)
+                                    br
+                                    label(for="lastName") Familiename:
+                                    br
+
+                        .row
+                            .col-md-6
+                                .form-floating
+                                    input.form-control(type="email" id="email" name="email" required)
+                                    br
+                                    label(for="email") Email:
+                                    br
+
+                            .col-md-6
+                                .form-floating
+                                    input.form-control(type="date" id="dateOfBirth" name="dateOfBirth" required)
+                                    br
+                                    label(for="dateOfBirth") Geboortedatum:
+                                    br
+
+                        .row
+                            .col-md-6
+                                .form-floating
+                                    input.form-control(type="password" id="password" name="password" required)
+                                    br
+                                    label(for="password") Wachtwoord:
+                                    br
+
+                        .col-12
+                            input.btn.btn-primary.w-100.py-3(type="submit" placeholder="Maak aan")
+
+block scripts
+    script(src="/scripts/registerPage.js")

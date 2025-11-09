@@ -1,0 +1,19 @@
+nav.navbar.navbar-expand-lg.navbar-dark.bg-dark.px-4.px-lg-5.py-3.py-lg-0
+    a.navbar-brand.p-0(href="/")
+        h1.text-primary.navbar-title.m-0
+            span.material-symbols-outlined.fs-2.me-3 sports_tennis
+            | Gent's dubbelspel
+    button.navbar-toggler(type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse")
+        span.fa.fa-bars
+    .collapse.navbar-collapse#navbarCollapse
+        .navbar-nav.ms-auto.py-0.pe-4#navbarFirstPart
+            a.nav-item.nav-link(href="/index.html") Home
+            a.nav-item.nav-link(href="/about.html") Over ons
+            a.nav-item.nav-link(href="/teams.html") Teams
+            a.nav-item.nav-link(href="/allPlayers.html") Spelerslijst
+            // Restricted links - only show when logged in
+            a.nav-item.nav-link.nav-link-restricted(href="/jouwTeam.html" style="display: none;") Jouw team
+            a.nav-item.nav-link.nav-link-restricted(href="/mijnAccountPage.html" style="display: none;") Mijn account
+        .btn-group#accountOptions(role="group" aria-label="Account buttons")
+            a.btn.btn-outline-warning.py-2.px-4(href="/loginPage.html") Inloggen
+            a.btn.btn-danger.btn-outline-warning.py-2.px-4.text-dark(href="/registerPage.html") Schrijf je in

@@ -1,0 +1,19 @@
+extends layout
+
+block content
+    .container-xxl.px-0.bg-dark
+        .py-5.d-flex.align-items-center.justify-content-center
+            .row.m-2.p-5.m-5
+                h1.text-white Een lijst met onze spelers.
+                .p-0.py-5
+                    table.table.table-borderless.table-striped.rounded-4.overflow-hidden.shadow-lg#playersTable
+                        tr.p-0.table-warning
+                            th Voornaam
+                            th Familienaam
+                            th Team
+
+                    button.btn.btn-primary#firstNameSort Sorteren op voornaam
+                    button.btn.btn-primary#lastNameSort refresh
+
+block scripts
+    script(src="/scripts/memberPage.js")

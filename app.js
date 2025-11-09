@@ -1,11 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
+const path = require('path');
 
 require('dotenv').config(); // load environment values from .env file
 
 const app = express();
 const port = 3000;
+
+// Set Pug as the view engine
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -28,10 +33,48 @@ async function getDatabase() {
     return client.db('GentTennisWedstrijd');
 }
 
-// give the main htlml file when accessing root url
+// Render pages with PUG
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html');
+    res.render('index', { title: 'Home - Tennis dubbelspel tornooi' });
 });
+
+app.get('/index.html', (req, res) => {
+    res.render('index', { title: 'Home - Tennis dubbelspel tornooi' });
+});
+
+app.get('/about.html', (req, res) => {
+    res.render('about', { title: 'Over ons' });
+});
+
+app.get('/teams.html', (req, res) => {
+    res.render('teams', { title: 'Teams' });
+});
+
+app.get('/loginPage.html', (req, res) => {
+    res.render('loginPage', { title: 'Inloggen' });
+});
+
+app.get('/registerPage.html', (req, res) => {
+    res.render('registerPage', { title: 'Registreren' });
+});
+
+app.get('/allPlayers.html', (req, res) => {
+    res.render('allPlayers', { title: 'Alle Spelers' });
+});
+
+app.get('/mijnAccountPage.html', (req, res) => {
+    res.render('mijnAccountPage', { title: 'Mijn Account' });
+});
+
+app.get('/jouwTeam.html', (req, res) => {
+    res.render('jouwTeam', { title: 'Jouw Team' });
+});
+
+
+// give the main htlml file when accessing root url
+/*app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/public/index.html');
+});*/
 
 // Get all players
 app.get('/api/get_player_list', async (req, res) => {

@@ -1,0 +1,88 @@
+extends layout
+
+block content
+    // Hero Header
+    .container-xxl.py-5.bg-dark.hero-header.mb-5
+        .container.my-5.py-5
+            .row.align-items-center.g-5
+                .col-lg-6.text-center.text-lg-start
+                    h1.display-3.text-white.animated.slideInLeft
+                        | Dubbelspeltornooitest
+                        br
+                        | Gent
+                    p.text-white.animated.slideInLeft.mb-4.pb-2 Maak je klaar voor het leukste tennisevent van het jaar.
+                    a.btn.btn-primary.py-sm-3.px-sm-5.me-3.animated.slideInLeft(href="/registerPage.html") Schrijf je in
+
+                .col-lg-6.text-center.text-lg-end.overflow-hidden
+                    img.img-fluid(src="images/tennisball.webp" alt="")
+
+    // Features
+    .container-xxl.py-5
+        .container
+            .row.g-4
+                .col-lg-3.col-sm-6.wow.fadeInUp(data-wow-delay="0.1s")
+                    .service-item.rounded.pt-3
+                        .p-4
+                            i.fa.fa-3x.fa-map-marker.text-primary.mb-4
+                            h5 Locatie
+                            p Vlak aan het stadscentrum van Gent ligt de Blaarmeersen. Een prachtig recreatiedomein met mogelijkheid tot vele sporten.
+
+                .col-lg-3.col-sm-6.wow.fadeInUp(data-wow-delay="0.3s")
+                    .service-item.rounded.pt-3
+                        .p-4
+                            i.fa.fa-3x.fa-utensils.text-primary.mb-4
+                            h5 Eten & Drinken
+                            p Er zullen foodtrucks en een bar aanwezig zijn.
+
+                .col-lg-3.col-sm-6.wow.fadeInUp(data-wow-delay="0.5s")
+                    .service-item.rounded.pt-3
+                        .p-4
+                            i.fa.fa-3x.fa-users.text-primary.mb-4
+                            h5 Supporters
+                            p Iedereen is welkom om hun favoriete team aan te moedigen.
+
+                .col-lg-3.col-sm-6.wow.fadeInUp(data-wow-delay="0.5s")
+                    .service-item.rounded.pt-3
+                        .p-4
+                            i.fa.fa-3x.fa-shower.text-primary.mb-4
+                            h5 Voorzieningen
+                            p Kleedkamers en douches worden voorzien voor de spelers.
+
+    // About Section
+    .container-xxl.py-5
+        .container
+            .row.g-5.align-items-center
+                .col-lg-6
+                    .row.g-3
+                        .col-6.text-start
+                            img.img-fluid.rounded.w-100.wow.zoomIn(data-wow-delay="0.1s" src="images/tennis1.jpg")
+                        .col-6.text-start
+                            img.img-fluid.rounded.w-75.wow.zoomIn(data-wow-delay="0.3s" src="images/tennis2.jpg" style="margin-top: 25%;")
+                        .col-6.text-end
+                            img.img-fluid.rounded.w-75.wow.zoomIn(data-wow-delay="0.5s" src="images/tennis3.jpg")
+                        .col-6.text-end
+                            img.img-fluid.rounded.w-100.wow.zoomIn(data-wow-delay="0.7s" src="images/tennis4.jpg")
+
+                .col-lg-6
+                    h5.section-title.ff-secondary.text-start.text-primary.fw-normal Over ons
+                    h1.mb-4 Welkom bij dubbelspel Gent
+                    p.mb-4 Elk jaar organiseren wij één van de grootste tennistornooien voor dubbelspel.
+                    p.mb-4 Met zowel belgische als internationale spelers is ons tornooi voor een gevarieerd publiek. Iedereen is welkom, zowel spelers als supporters. Tussen de wedstrijden door kan iets gedronken en gegeten worden en wordt randanimatie voorzien. Allen daarheen dus.
+
+    // Facebook Event
+    .container-xxl.py-5.text-center
+        h5.section-title.ff-secondary.text-primary.fw-normal.mb-4 Facebook Event
+        .d-flex.justify-content-center
+            .fb-page(
+                data-href="https://www.facebook.com/facebook"
+                data-tabs="timeline"
+                data-width="500"
+                data-height="400"
+                data-small-header="false"
+                data-adapt-container-width="true"
+                data-hide-cover="false"
+                data-show-facepile="true"
+            )
+block append scripts
+    #fb-root
+    script(async defer crossorigin="anonymous" src="https://connect.facebook.net/nl_BE/sdk.js#xfbml=1&version=v17.0" nonce="ABC123")
