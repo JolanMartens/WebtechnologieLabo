@@ -69,6 +69,9 @@ app.get('/mijnAccountPage', (req, res) => {
 app.get('/jouwTeam', (req, res) => {
     res.render('jouwTeam', { title: 'Jouw Team' });
 });
+app.get('/cookies', (req, res) => {
+    res.render('cookies', { title: 'cookies' });
+});
 
 
 // give the main htlml file when accessing root url
