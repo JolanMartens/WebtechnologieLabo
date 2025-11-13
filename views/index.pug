@@ -1,18 +1,20 @@
 extends layout
 
 block append head
-    link(rel="stylesheet", id="silktide-consent-manager-css", href="css/silktide-consent-manager.css")
+    link(rel="stylesheet", id="silktide-consent-manager-css", href="/css/silktide-consent-manager.css")
 
 block content
-            .row.align-items-center.g-5
-                .col-lg-6.text-center.text-lg-start
-                    h1.display-3.text-white.animated.slideInLeft
-                        | Dubbelspeltornooitest
-                        br
-                        | Gent
-                    p.text-white.animated.slideInLeft.mb-4.pb-2 Maak je klaar voor het leukste tennisevent van het jaar.
-                data-show-facepile="true"
-            
+    .row.align-items-center.g-5
+        .col-lg-6.text-center.text-lg-start
+            h1.display-3.text-white.animated.slideInLeft
+                | Dubbelspeltornooitest
+                br
+                | Gent
+            p.text-white.animated.slideInLeft.mb-4.pb-2
+                | Maak je klaar voor het leukste tennisevent van het jaar.
+        // Voeg hier een element toe voor data-show-facepile
+        div(data-show-facepile="true")
+
 block append scripts
     #fb-root
     script(async defer crossorigin="anonymous" src="https://connect.facebook.net/nl_BE/sdk.js#xfbml=1&version=v17.0" nonce="ABC123")
