@@ -2,7 +2,7 @@ extends layout
 
 //- Add CSS to the head
 block append head
-    link(rel="stylesheet", id="silktide-consent-manager-css", href="path-to-css/silktide-consent-manager.css")
+    link(rel="stylesheet", id="silktide-consent-manager-css", href="css\silktide-consent-manager.css")
 
 block content
     // Hero Header
@@ -52,7 +52,7 @@ block append scripts
     script(async defer crossorigin="anonymous" src="https://connect.facebook.net/nl_BE/sdk.js#xfbml=1&version=v17.0" nonce="ABC123")
     
     //- Silktide Cookie Banner JS
-    script(src="path-to-js/silktide-consent-manager.js")
+    script(src="scrpits/silktide-consent-manager.js")
     script.
         silktideCookieBannerManager.updateCookieBannerConfig({
           background: {
