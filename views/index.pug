@@ -1,7 +1,9 @@
-
 extends layout
+
 block append head
-    link(rel="stylesheet" id="silktide-consent-manager-css" href="css/silktide-consent-manager.css")
+    // CSS voor consent manager
+    link(rel="stylesheet" id="silktide-consent-manager-css" href="/css/silktide-consent-manager.css")
+
 block content
     // Hero Header
     .container-xxl.py-5.bg-dark.hero-header.mb-5
@@ -17,83 +19,44 @@ block content
                     a.btn.btn-primary.py-sm-3.px-sm-5.me-3.animated.slideInLeft(href="/registerPage")
                         | Schrijf je in
                 .col-lg-6.text-center.text-lg-end.overflow-hidden
-                    img.img-fluid(src="images/tennisball.webp" alt="")
-
+                    img.img-fluid(src="/images/tennisball.webp" alt="Tennisbal")
 
     // Features
-
     .container-xxl.py-5
         .container
             .row.g-4
-                .col-lg-3.col-sm-6.wow.fadeInUp(data-wow-delay="0.1s")
-                    .service-item.rounded.pt-3
-                        .p-4
-                            i.fa.fa-3x.fa-map-marker.text-primary.mb-4
-                            h5 Locatie
-                            p Vlak aan het stadscentrum van Gent ligt de Blaarmeersen. Een prachtig recreatiedomein met mogelijkheid tot vele sporten.
-                .col-lg-3.col-sm-6.wow.fadeInUp(data-wow-delay="0.3s")
-                    .service-item.rounded.pt-3
-                        .p-4
-                            i.fa.fa-3x.fa-utensils.text-primary.mb-4
-                            h5 Eten & Drinken
-                            p Er zullen foodtrucks en een bar aanwezig zijn.
-                .col-lg-3.col-sm-6.wow.fadeInUp(data-wow-delay="0.5s")
-                    .service-item.rounded.pt-3
-                        .p-4
-                            i.fa.fa-3x.fa-users.text-primary.mb-4
-                            h5 Supporters
-                            p Iedereen is welkom om hun favoriete team aan te moedigen.
-
-
-                .col-lg-3.col-sm-6.wow.fadeInUp(data-wow-delay="0.5s")
-                    .service-item.rounded.pt-3
-                        .p-4
-                            i.fa.fa-3x.fa-shower.text-primary.mb-4
-                            h5 Voorzieningen
-                            p Kleedkamers en douches worden voorzien voor de spelers.
-
+                each feature, i in [
+                    {icon: 'fa-map-marker', title: 'Locatie', text: 'Vlak aan het stadscentrum van Gent ligt de Blaarmeersen. Een prachtig recreatiedomein met mogelijkheid tot vele sporten.'},
+                    {icon: 'fa-utensils', title: 'Eten & Drinken', text: 'Er zullen foodtrucks en een bar aanwezig zijn.'},
+                    {icon: 'fa-users', title: 'Supporters', text: 'Iedereen is welkom om hun favoriete team aan te moedigen.'},
+                    {icon: 'fa-shower', title: 'Voorzieningen', text: 'Kleedkamers en douches worden voorzien voor de spelers.'}
+                ]
+                    .col-lg-3.col-sm-6.wow.fadeInUp(data-wow-delay=`${0.1 + i*0.2}s`)
+                        .service-item.rounded.pt-3
+                            .p-4
+                                i.fa.fa-3x(class=feature.icon).text-primary.mb-4
+                                h5= feature.title
+                                p= feature.text
 
     // About Section
-
     .container-xxl.py-5
-
         .container
-
             .row.g-5.align-items-center
-
                 .col-lg-6
-
                     .row.g-3
-
                         .col-6.text-start
-
-                            img.img-fluid.rounded.w-100.wow.zoomIn(data-wow-delay="0.1s" src="images/tennis1.jpg")
-
+                            img.img-fluid.rounded.w-100.wow.zoomIn(data-wow-delay="0.1s" src="/images/tennis1.jpg")
                         .col-6.text-start
-
-                            img.img-fluid.rounded.w-75.wow.zoomIn(data-wow-delay="0.3s" src="images/tennis2.jpg" style="margin-top: 25%;")
-
+                            img.img-fluid.rounded.w-75.wow.zoomIn(data-wow-delay="0.3s" src="/images/tennis2.jpg" style="margin-top: 25%;")
                         .col-6.text-end
-
-                            img.img-fluid.rounded.w-75.wow.zoomIn(data-wow-delay="0.5s" src="images/tennis3.jpg")
-
+                            img.img-fluid.rounded.w-75.wow.zoomIn(data-wow-delay="0.5s" src="/images/tennis3.jpg")
                         .col-6.text-end
-
-                            img.img-fluid.rounded.w-100.wow.zoomIn(data-wow-delay="0.7s" src="images/tennis4.jpg")
-
-
-
+                            img.img-fluid.rounded.w-100.wow.zoomIn(data-wow-delay="0.7s" src="/images/tennis4.jpg")
                 .col-lg-6
-
                     h5.section-title.ff-secondary.text-start.text-primary.fw-normal Over ons
-
                     h1.mb-4 Welkom bij dubbelspel Gent
-
                     p.mb-4 Elk jaar organiseren wij één van de grootste tennistornooien voor dubbelspel.
-
-                    p.mb-4 Met zowel belgische als internationale spelers is ons tornooi voor een gevarieerd publiek. Iedereen is welkom, zowel spelers als supporters. Tussen de wedstrijden door kan iets gedronken en gegeten worden en wordt randanimatie voorzien. Allen daarheen dus.
-
-
+                    p.mb-4 Met zowel Belgische als internationale spelers is ons tornooi voor een gevarieerd publiek. Iedereen is welkom, zowel spelers als supporters. Tussen de wedstrijden door kan iets gedronken en gegeten worden en wordt randanimatie voorzien. Allen daarheen dus.
 
     // Facebook Event
     .container-xxl.py-5.text-center
@@ -108,12 +71,15 @@ block content
                 data-adapt-container-width="true"
                 data-hide-cover="false"
                 data-show-facepile="true"
-
             )
 
 block append scripts
+    // Facebook SDK
     #fb-root
-    script(src="scripts/silktide-consent-manager.js")
+    script(async defer crossorigin="anonymous" src="https://connect.facebook.net/nl_BE/sdk.js#xfbml=1&version=v17.0" nonce="ABC123")
+
+    // Silktide Consent Manager
+    script(src="/scripts/silktide-consent-manager.js")
     script.
         silktideCookieBannerManager.updateCookieBannerConfig({
             background: { showBackground: true },
@@ -122,14 +88,14 @@ block append scripts
                 {
                     id: "necessary",
                     name: "Necessary",
-                    description: "<p>These cookies are necessary...</p>",
+                    description: "<p>These cookies are necessary for the website to function properly and cannot be switched off.</p>",
                     required: true,
                     onAccept: function() { console.log('Necessary accepted'); }
                 },
                 {
                     id: "analytics",
                     name: "Analytics",
-                    description: "<p>These cookies help us improve...</p>",
+                    description: "<p>These cookies help us improve the site by tracking which pages are most popular.</p>",
                     defaultValue: true,
                     onAccept: function() {
                         gtag('consent', 'update', { analytics_storage: 'granted' });
@@ -142,7 +108,7 @@ block append scripts
                 {
                     id: "advertising",
                     name: "Advertising",
-                    description: "<p>These cookies provide extra features...</p>",
+                    description: "<p>These cookies provide extra features and personalization.</p>",
                     onAccept: function() {
                         gtag('consent', 'update', {
                             ad_storage: 'granted',
@@ -162,14 +128,14 @@ block append scripts
             ],
             text: {
                 banner: {
-                    description: "<p>We use cookies on our site...</p>",
+                    description: "<p>We use cookies on our site to enhance your experience. /cookie-policyCookie Policy</a></p>",
                     acceptAllButtonText: "Accept all",
                     rejectNonEssentialButtonText: "Reject non-essential",
                     preferencesButtonText: "Preferences"
                 },
                 preferences: {
                     title: "Customize your cookie preferences",
-                    description: "<p>We respect your right to privacy...</p>"
+                    description: "<p>We respect your right to privacy. You can choose not to allow some types of cookies.</p>"
                 }
             }
         });
