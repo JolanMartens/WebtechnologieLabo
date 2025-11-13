@@ -4,8 +4,6 @@ block append head
     link(rel="stylesheet", id="silktide-consent-manager-css", href="css/silktide-consent-manager.css")
 
 block content
-    .container-xxl.py-5.bg-dark.hero-header.mb-5
-        .container.my-5.py-5
             .row.align-items-center.g-5
                 .col-lg-6.text-center.text-lg-start
                     h1.display-3.text-white.animated.slideInLeft
@@ -13,43 +11,8 @@ block content
                         br
                         | Gent
                     p.text-white.animated.slideInLeft.mb-4.pb-2 Maak je klaar voor het leukste tennisevent van het jaar.
-                .col-lg-6.text-center.text-lg-end.overflow-hidden
-                    img.img-fluid(src="images/tennisball.webp" alt="")
-    //- Add more content sections here (Features, About, etc.)
-
+                data-show-facepile="true"
+            
 block append scripts
     #fb-root
     script(async defer crossorigin="anonymous" src="https://connect.facebook.net/nl_BE/sdk.js#xfbml=1&version=v17.0" nonce="ABC123")
-    
-    //- Silktide Cookie Banner JS
-    script(src="scripts/silktide-consent-manager.js")
-    script.
-        silktideCookieBannerManager.updateCookieBannerConfig({
-          background: {
-            showBackground: true
-          },
-          cookieIcon: {
-            position: "bottomLeft"
-          },
-          cookieTypes: [],
-          text: {
-            banner: {
-              description: "<p>We use cookies on our site to enhance your user experience, provide personalized content, and analyze our traffic. <a href=\"https://your-website.com/cookie-policy\" target=\"_blank\">Cookie Policy.</a></p>",
-              acceptAllButtonText: "Accept all",
-              acceptAllButtonAccessibleLabel: "Accept all cookies",
-              rejectNonEssentialButtonText: "Reject non-essential",
-              rejectNonEssentialButtonAccessibleLabel: "Reject non-essential",
-              preferencesButtonText: "Preferences",
-              preferencesButtonAccessibleLabel: "Toggle preferences"
-            },
-            preferences: {
-              title: "Customize your cookie preferences",
-              description: "<p>We respect your right to privacy. You can choose not to allow some types of cookies. Your cookie preferences will apply across our website.</p>",
-              creditLinkText: "Get this banner for free",
-              creditLinkAccessibleLabel: "Get this banner for free"
-            }
-          },
-          position: {
-            banner: "center"
-          }
-        });
