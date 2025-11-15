@@ -501,3 +501,11 @@ body{
     padding-right: 0;
     border-right: none;
 }
+
+.orange-link {
+  color: orange !important;
+  text-decoration: none; /* optional: remove underline */
+}
+.orange-link:hover {
+  color: darkorange; /* optional: hover effect */
+}
