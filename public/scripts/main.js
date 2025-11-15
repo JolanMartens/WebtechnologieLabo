@@ -35,5 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     L.marker(gentCoords).addTo(map)
       .bindPopup('<b>Tennis Dubbelspel Gent</b><br>Blaarmeersen, Gent')
       .openPopup();
+      setTimeout(() => {map.invalidateSize();}, 300);
+
   }
 });
