@@ -89,7 +89,7 @@ if (document.readyState === 'loading') {
 
 function getCookie(dataname){
     const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
+    const parts = value.split(`; ${dataname}=`);
     if (parts.length == 2) return parts.pop().split(';').shift();
     return null;
 }
