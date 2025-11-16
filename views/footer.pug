@@ -64,27 +64,32 @@
 script(src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js")
 
 script.
-  document.addEventListener('DOMContentLoaded', function () {
-    const lat = 51.0443;
-    const lng = 3.6881;
+  document.addEventListener('DOMContentLoaded', () => {
+  if (!document.getElementById('map') || !window.L) return;
 
-    const map = L.map('map', {
-      scrollWheelZoom: false
-    }).setView([lat, lng], 14);
+  const coords = [51.0443, 3.6881];
+  const map = L.map('map', { scrollWheelZoom: false }).setView(coords, 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+  L.marker(coords).addTo(map);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    L.marker([lat, lng])
-      .addTo(map)
-      .bindPopup('<b>Blaarmeersen</b><br>Campinglaan 13, Gent')
-      .openPopup();
-
-    // FIX FOR BROKEN TILES
-    setTimeout(() => {
-      map.invalidateSize();
-      console.log("Leaflet map resized after animation");
-    }, 1000);
-  });
+  // Retry invalidation for a few times in case of animation delays
+  let attempts = 0;
+  const maxAttempts = 8;
+  const timer = setInterval(() => {
+    attempts++;
+    map.invalidateSize(true);
+    // Check if the tiles are laid out reasonably by looking at one tile width in DOM
+    const tile = document.querySelector('#map .leaflet-tile');
+    if (tile) {
+      const w = tile.style.width || tile.getAttribute('width') || tile.naturalWidth || 0;
+      if (parseInt(w, 10) > 0 && parseInt(w, 10) <= 512) {
+        clearInterval(timer);
+        console.log('Map tiles look normal; stopped retries');
+      }
+    }
+    if (attempts >= maxAttempts) {
+      clearInterval(timer);
+      console.warn('Stopped map invalidate retries');
+    }
+  }, 350);
+});
