@@ -61,3 +61,27 @@
                         a(href="") Cookies
                         a(href="") Help
                         a(href="") FQAs
+script(src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-o9N1j6k7p4y3Y3a0X0b9vY7n8A3c1gT8z3rXqP+0w2M=" crossorigin="")
+script.
+  document.addEventListener('DOMContentLoaded', function () {
+    var lat = 51.0443; 
+    var lng = 3.6881;  
+
+    // Create map
+    var map = L.map('map', { scrollWheelZoom: false }).setView([lat, lng], 13);
+
+    // Add tile layer (OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Add marker
+    var marker = L.marker([lat, lng]).addTo(map);
+    marker.bindPopup('<b>Blaarmeersen</b><br>Campinglaan 13, Gent').openPopup();
+
+    // If the map container might be hidden/displayed by tabs/modals, call invalidateSize()
+    setTimeout(function () {
+      map.invalidateSize();
+    }, 200);
+  });
