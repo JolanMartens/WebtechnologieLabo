@@ -32,7 +32,7 @@
                     | Blaarmeersen
                     br
                     | Campinglaan 13 Gent
-                    #map(style="width: 100%; height: 200px; border-radius: 8px;")
+                #map(style="width: 100%; height: 200px; border-radius: 8px;")
 
             .col-lg-3.col-md-6
                 h4.section-title.ff-secondary.text-start.text-primary.fw-normal.mb-4 Nieuwsbrief
@@ -65,31 +65,39 @@ script(src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js")
 
 script.
   document.addEventListener('DOMContentLoaded', () => {
-  if (!document.getElementById('map') || !window.L) return;
+    const mapElement = document.getElementById('map');
+    if (!mapElement) return;
 
-  const coords = [51.0443, 3.6881];
-  const map = L.map('map', { scrollWheelZoom: false }).setView(coords, 14);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
-  L.marker(coords).addTo(map);
+    const coords = [51.0443, 3.6881];
+    let map = null;
 
-  // Retry invalidation for a few times in case of animation delays
-  let attempts = 0;
-  const maxAttempts = 8;
-  const timer = setInterval(() => {
-    attempts++;
-    map.invalidateSize(true);
-    // Check if the tiles are laid out reasonably by looking at one tile width in DOM
-    const tile = document.querySelector('#map .leaflet-tile');
-    if (tile) {
-      const w = tile.style.width || tile.getAttribute('width') || tile.naturalWidth || 0;
-      if (parseInt(w, 10) > 0 && parseInt(w, 10) <= 512) {
-        clearInterval(timer);
-        console.log('Map tiles look normal; stopped retries');
-      }
+    // Create map once
+    function initMap() {
+      if (map) return;
+
+      map = L.map('map', { scrollWheelZoom: false }).setView(coords, 14);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+      }).addTo(map);
+      L.marker(coords).addTo(map)
+        .bindPopup('<b>Blaarmeersen</b><br>Campinglaan 13, Gent');
+
+      // force correct rendering
+      setTimeout(() => map.invalidateSize(true), 150);
+      window.addEventListener('resize', () => map.invalidateSize(true));
+
+      console.log('Map initialized when visible');
     }
-    if (attempts >= maxAttempts) {
-      clearInterval(timer);
-      console.warn('Stopped map invalidate retries');
-    }
-  }, 350);
-});
+
+    // Wait until the map becomes visible via WOW fadeIn animation
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          initMap();
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.1 });
+
+    observer.observe(mapElement);
+  });
