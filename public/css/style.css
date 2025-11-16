@@ -502,11 +502,10 @@ body{
     border-right: none;
 }
 
-.nav-link {
-  color: orange !important;
-  text-decoration: none; /* optional: remove underline */
+a.nav-item.nav-link {
+  color: #FEA116 !important;
 }
-.nav-link:hover {
-  color: darkorange; /* optional: hover effect */
+a.nav-item.nav-link:hover {
+  color: darkorange; 
 }
 
