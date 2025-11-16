@@ -14,15 +14,17 @@ block content
                     li.breadcrumb-item.text-white.active(aria-current="page") Teams
 
     // Teams Table
-    .container-xxl.py-5
-        .container
-            table#teamsTable
-                tr
-                    th Team
-                    th Eerste speler
-                    th Tweede speler
+    .container-xxl.px-0.bg-dark
+        .py-5.d-flex.align-items-center.justify-content-center
+            .row.m-2.p-5.m-5
+                table#teamsTable
+                    tr
+                        th Team
+                        th Eerste speler
+                        th Tweede speler
 
-            button.btn.btn-primary#teamNameSort Sorteer op teamnaam
+                button.btn.btn-primary#teamNameSort Sorteer op teamnaam
+                button.btn.btn-primary#lastNameSort refresh
 
 block scripts
     script(src="/scripts/teamsPage.js")
