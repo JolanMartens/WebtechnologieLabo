@@ -4,6 +4,8 @@ var teamsTable = document.querySelector('#teamsTable');
 // Link a function to button
 const myButton1 = document.getElementById('teamNameSort');
 myButton1.addEventListener('click', sortByTeamName);
+document.getElementById('refresh').addEventListener('click', initTeamsTable);
+
 
 //filling the table
 function fillTable(teams) {

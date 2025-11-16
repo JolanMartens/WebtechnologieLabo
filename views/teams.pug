@@ -17,13 +17,14 @@ block content
         .py-5.d-flex.align-items-center.justify-content-center
             .row.m-2.p-5.m-5
                 table.table.table-borderless.table-striped.rounded-4.overflow-hidden.shadow-lg#teamsTable
-                    tr.p-0.table-warning
-                        th Team
-                        th Eerste speler
-                        th Tweede speler
-
+                    thead
+                        tr.p-0.table-warning
+                            th Team
+                            th Eerste speler
+                            th Tweede speler
+                    tbody
                 button.btn.btn-primary#teamNameSort Sorteer op teamnaam
-                button.btn.btn-primary#lastNameSort refresh
+                button.btn.btn-primary#refresh refresh
 
 block scripts
     script(src="/scripts/teamsPage.js")
