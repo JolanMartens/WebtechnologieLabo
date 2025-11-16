@@ -1,5 +1,5 @@
 // Link the table to membersTable
-var membersTable = document.querySelector('#membersTable');
+var teamsTable = document.querySelector('#teamsTable');
 
 // Link a function to button
 const myButton1 = document.getElementById('teamNameSort');
@@ -13,23 +13,24 @@ function fillTable(teams) {
         let cell2 = row.insertCell(1);
         let cell3 = row.insertCell(2);
         
-        cell1.innerHTML = members[i].teamname;
-        cell2.innerHTML = members[i].firstplayer;
-        cell3.innerHTML = members[i].secondplayer;
+        cell1.innerHTML = teams[i].teamname;
+        cell2.innerHTML = teams[i].players[0] ? `${teams[i].players[0].firstName} ${teams[i].players[0].lastName}` : '—';
+        cell3.innerHTML = teams[i].players[1] ? `${teams[i].players[1].firstName} ${teams[i].players[1].lastName}` : '—';
+
     }
 }
 
 //clearing the table
 function clearTable() {
     //clear the table rows, except the first row(header):
-    while (membersTable.rows.length > 1 ) {
-        membersTable.deleteRow(1);
+    while (teamsTable.rows.length > 1 ) {
+        teamsTable.deleteRow(1);
     }
 }
 
 async function initTeamsTable() {
     //getting the members
-    const response = await fetch("/api/get_teams_list");
+    const response = await fetch("/api/get_teams_with_players");
     const teams = await response.json();
     console.log(teams);
     fillTable(teams)
@@ -37,7 +38,7 @@ async function initTeamsTable() {
 
 async function sortByTeamName() {
     console.log("CLIENT:button1");
-    const response = await fetch("/api/get_teams_list");
+    const response = await fetch("/api/get_teams_with_players");
     const teamsList = await response.json();
 
     teamsListSorted = teamsList.sort((a,b) => a.teamname.localeCompare(b.teamname));
