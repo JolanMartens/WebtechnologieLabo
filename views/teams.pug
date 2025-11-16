@@ -13,12 +13,11 @@ block content
                         a(href="#") Pagina's
                     li.breadcrumb-item.text-white.active(aria-current="page") Teams
 
-    // Teams Table
-    .container-xxl.px-0.bg-dark
+        // Teams Table
         .py-5.d-flex.align-items-center.justify-content-center
             .row.m-2.p-5.m-5
-                table#teamsTable
-                    tr
+                table.table.table-borderless.table-striped.rounded-4.overflow-hidden.shadow-lg#teamsTable
+                    tr.p-0.table-warning
                         th Team
                         th Eerste speler
                         th Tweede speler
