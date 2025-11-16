@@ -508,7 +508,7 @@ body{
 }
 
 .breadcrumb a:hover{
-    color: darkorange;
+    color: darkorange !important; 
 }
 
 
