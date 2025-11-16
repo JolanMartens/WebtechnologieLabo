@@ -21,7 +21,7 @@ myButton.onclick = function(){
   //setUserName();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+/*document.addEventListener('DOMContentLoaded', () => {
   const gentCoords = [51.0443, 3.6881]; 
 
   if(document.getElementById('map')) {
@@ -35,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
     L.marker(gentCoords).addTo(map)
       .bindPopup('<b>Tennis Dubbelspel Gent</b><br>Blaarmeersen, Gent')
       .openPopup();
-      setTimeout(() => {map.invalidateSize();}, 300);
-
   }
 });
+*/
