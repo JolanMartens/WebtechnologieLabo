@@ -105,7 +105,7 @@ body{
     margin-left: 25px;
     padding: 35px 0;
     font-size: 15px;
-    color: var(--light) !important;
+    color: var(--light);
     text-transform: uppercase;
     font-weight: 500;
     outline: none;
