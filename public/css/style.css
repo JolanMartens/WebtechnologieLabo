@@ -105,7 +105,7 @@ body{
     margin-left: 25px;
     padding: 35px 0;
     font-size: 15px;
-    color: var(--light);
+    color: var(--light) !important;
     text-transform: uppercase;
     font-weight: 500;
     outline: none;
@@ -502,10 +502,14 @@ body{
     border-right: none;
 }
 
-a.nav-item.nav-link {
-  color: #FEA116 !important;
+
+.breadcrumb a {
+  color: #FEA116 !important; 
 }
-a.nav-item.nav-link:hover {
-  color: darkorange; 
+
+.breadcrumb a:hover{
+    color: darkorange;
 }
+
+
 
