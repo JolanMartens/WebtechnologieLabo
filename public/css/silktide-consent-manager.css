@@ -95,6 +95,7 @@
 }
 
 #silktide-wrapper .st-button--primary {
+  color: var(--primaryColor);
 }
 
 #silktide-wrapper .st-button--primary:hover {
