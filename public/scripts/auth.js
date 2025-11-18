@@ -1,7 +1,14 @@
 
 function isLoggedIn() {
-    return localStorage.getItem('isLoggedIn') === 'true';
+    //return localStorage.getItem('isLoggedIn') === 'true';
+    return getCookie('isLoggedIn');
 }
+
+// set experationdate to past
+function deleteCookie(name) {
+  document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+}
+
 
 function logout() {
     localStorage.removeItem('isLoggedIn');
@@ -9,6 +16,12 @@ function logout() {
     localStorage.removeItem('userFirstName');
     localStorage.removeItem('userLastName');
     localStorage.removeItem('userId');
+    document.cookie
+    deleteCookie('isLoggedIn');
+    deleteCookie('userEmail');
+    deleteCookie('userFirstName');
+    deleteCookie('userLastName');
+    deleteCookie('userId');
 
     window.location.href = '/';
 }
@@ -17,10 +30,10 @@ function getCurrentUser() {
     if (!isLoggedIn()) return null;
 
     return {
-        email: localStorage.getItem('userEmail'),
-        firstName: localStorage.getItem('userFirstName'),
-        lastName: localStorage.getItem('userLastName'),
-        id: localStorage.getItem('userId')
+        email: getCookie('userEmail'),
+        firstName: getCookie('userFirstName'),
+        lastName: getCookie('userLastName'),
+        id: getCookie('userId')
     }
 }
 
@@ -72,4 +85,11 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', updateNav);
 } else {
     updateNav();
+}
+
+function getCookie(dataname){
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${dataname}=`);
+    if (parts.length == 2) return parts.pop().split(';').shift();
+    return null;
 }

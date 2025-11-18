@@ -8,21 +8,23 @@ block content
             nav(aria-label="breadcrumb")
                 ol.breadcrumb.justify-content-center.text-uppercase
                     li.breadcrumb-item
-                        a(href="#") Home
+                        a(href="/") Home
                     li.breadcrumb-item
                         a(href="#") Pagina's
                     li.breadcrumb-item.text-white.active(aria-current="page") Teams
 
-    // Teams Table
-    .container-xxl.py-5
-        .container
-            table#teamsTable
-                tr
-                    th Team
-                    th Eerste speler
-                    th Tweede speler
-
-            button.btn.btn-primary#firstNameSort Sorteer op teamnaam
+        // Teams Table
+        .py-5.d-flex.align-items-center.justify-content-center
+            .row.m-2.p-5.m-5
+                table.table.table-borderless.table-striped.rounded-4.overflow-hidden.shadow-lg#teamsTable
+                    thead
+                        tr.p-0.table-warning
+                            th Team
+                            th Eerste speler
+                            th Tweede speler
+                    tbody
+                button.btn.btn-primary#teamNameSort Sorteer op teamnaam
+                button.btn.btn-primary#refresh refresh
 
 block scripts
     script(src="/scripts/teamsPage.js")

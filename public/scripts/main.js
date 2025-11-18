@@ -21,7 +21,7 @@ myButton.onclick = function(){
   //setUserName();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+/*document.addEventListener('DOMContentLoaded', () => {
   const gentCoords = [51.0443, 3.6881]; 
 
   if(document.getElementById('map')) {
@@ -37,3 +37,4 @@ document.addEventListener('DOMContentLoaded', () => {
       .openPopup();
   }
 });
+*/

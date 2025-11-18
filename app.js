@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 const path = require('path');
 
 require('dotenv').config(); // load environment values from .env file
@@ -114,6 +114,14 @@ app.post('/api/new_player', async function(req, res) {
             return res.status(400).json({ error: 'player already exists' });
         }
 
+        if (teamId) {
+            const teamPlayerCount = await playersCollection.countDocuments({ teamId: new ObjectId(teamId) });
+            if (teamPlayerCount >= 2) {
+                return res.status(400).json({ error: 'Team already has two players' });
+            }
+        }
+
+
         // create new player object
         const newPlayer = {
             firstName: firstName,
@@ -121,7 +129,7 @@ app.post('/api/new_player', async function(req, res) {
             dateOfBirth: new Date(dateOfBirth),
             email: email,
             password: password,
-            teamId: null
+            teamId: teamId ? new ObjectId(teamId) : null
         }
 
         const result = await playersCollection.insertOne(newPlayer); // insert player into database
@@ -179,4 +187,51 @@ if (process.env.NODE_ENV !== 'production') {
 module.exports = app;
 
 
-// maps
+app.post('/api/new_team', async (req, res) => {
+    try {
+        const { teamName } = req.body;
+        const db = await getDatabase();
+        const teamsCollection = db.collection('teams');
+
+        const newTeam = {
+            teamName: teamName,
+            createdAt: new Date(),
+
+        };
+
+        const result = await teamsCollection.insertOne(newTeam);
+        res.status(201).json({ success: true, team: result.ops[0] });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to create team', details: error.message });
+    }
+});
+
+app.get('/api/get_teams_with_players', async (req, res) => {
+    try {
+        const db = await getDatabase();
+        const teams = await db.collection('teams').aggregate([
+            {
+                $lookup: {
+                    from: 'players',
+                    localField: '_id',
+                    foreignField: 'teamId',
+                    as: 'players'
+                }
+            },
+            {
+                $project: {
+                    teamName: 1,
+                    players: {
+                        firstName: 1,
+                        lastName: 1,
+                        email: 1
+                    }
+                }
+            }
+        ]).toArray();
+
+        res.json(teams);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch teams with players', details: error.message });
+    }
+});

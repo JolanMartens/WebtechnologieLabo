@@ -88,6 +88,16 @@ Important Notes:
 
 After making these changes, commit and push to GitHub, and Vercel should automatically redeploy.
 
+
+##########Q:Schrijf een tekst over een tennis dubbelspel tornooi dat door een vriendengroep is opgestart na deze geen tornooi vonden.
+
+##########A: Wat begon als een spontane zoektocht onder vrienden, groeide uit tot een hartverwarmend initiatief. Enkele jaren geleden wilden wij als hechte vriendengroep deelnemen aan een dubbelspeltoernooi. We waren op zoek naar een evenement waar plezier, sportiviteit en toegankelijkheid centraal stonden—een plek waar iedereen welkom was, ongeacht niveau, leeftijd of achtergrond.
+
+Tot onze verbazing vonden we in de regio geen toernooi dat aan die waarden voldeed. In plaats van onze plannen op te bergen, besloten we het heft in eigen handen te nemen. Zo ontstond het idee om zelf een dubbelspeltoernooi te organiseren: laagdrempelig, inclusief en vooral met een gezellige sfeer waarin vriendschap en fair play primeren.
+
+Wat begon als een kleinschalig initiatief onder vrienden, groeide uit tot een jaarlijks terugkerend evenement waar spelers van alle hoeken samenkomen om te genieten van sport, ontmoeting en verbondenheid.
+
+
 ##########Q: i have a mongodb atlas set up in my vercel with with a MONGODB_URI=. it is not connected to a project yet. but i need to change many things in my files to change it to mognodb.
 
 ##########A: You're right! Let's convert your Express app to use MongoDB. Here's what you need to change:
@@ -268,5 +278,52 @@ Here’s a breakdown of the most fitting Font Awesome icons to symbolize support
 If you're using the free version of Font Awesome, stick with icons like `handshake`, `heart`, `gift`, and `users`. For more expressive options like `hands-holding-heart` or `house-heart`, you’ll need Font Awesome Pro.
 
 Would you like help picking one based on your specific project—like a website footer, donation page, or community badge?
+
+
+##########Q:How can i make a button to send an email to the email that was filled in into a box?
+
+##########A:To create a button that sends an email to the address entered in an input box, you can use a simple HTML + JavaScript approach with a `mailto:` link. Here's how:
+
+---
+
+## ✅ Basic Example (Client-Side Only)
+
+### 🧩 HTML
+```html
+<input type="email" id="emailInput" placeholder="Enter email address" required>
+<button onclick="sendEmail()">Send Email</button>
+```
+
+### 🧠 JavaScript
+```html
+<script>
+  function sendEmail() {
+    const email = document.getElementById('emailInput').value.trim();
+    if (!email) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    // Optional: customize subject and body
+    const subject = encodeURIComponent("Hello from the Tennis Tournament!");
+    const body = encodeURIComponent("Hi there,\n\nThis is a test email.\n\nBest regards,\nGent Tennis Team");
+
+    // Open default mail client
+    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+  }
+</script>
+```
+
+---
+
+## 💡 Notes
+
+- This opens the user's default email client (like Outlook, Apple Mail, or Gmail if configured).
+- It does **not** send the email automatically — the user must confirm and send it.
+- If you want to send the email **programmatically from your server**, you'd need to use a backend email service like **Nodemailer** (Node.js) or integrate with an API like **SendGrid** or **Mailgun**.
+
+---
+
+Would you like to send the email automatically from your Express backend instead, using something like Nodemailer? I can help you set that up too.
 
 

@@ -1,9 +1,5 @@
 extends layout
 
-block append head
-    // CSS voor consent manager
-    link(rel="stylesheet" id="silktide-consent-manager-css" href="/css/silktide-consent-manager.css")
-
 block content
     // Hero Header
     .container-xxl.py-5.bg-dark.hero-header.mb-5
@@ -24,19 +20,19 @@ block content
     // Features
     .container-xxl.py-5
         .container
+            mixin featureBox(icon, title, text, delay)
+                .col-lg-3.col-sm-6.wow.fadeInUp(data-wow-delay=delay)
+                    .service-item.rounded.pt-3
+                        .p-4
+                            i.fa.fa-3x(class=icon).text-primary.mb-4
+                            h5= title
+                            p= text
+
             .row.g-4
-                each feature, i in [
-                    {icon: 'fa-map-marker', title: 'Locatie', text: 'Vlak aan het stadscentrum van Gent ligt de Blaarmeersen. Een prachtig recreatiedomein met mogelijkheid tot vele sporten.'},
-                    {icon: 'fa-utensils', title: 'Eten & Drinken', text: 'Er zullen foodtrucks en een bar aanwezig zijn.'},
-                    {icon: 'fa-users', title: 'Supporters', text: 'Iedereen is welkom om hun favoriete team aan te moedigen.'},
-                    {icon: 'fa-shower', title: 'Voorzieningen', text: 'Kleedkamers en douches worden voorzien voor de spelers.'}
-                ]
-                    .col-lg-3.col-sm-6.wow.fadeInUp(data-wow-delay=`${0.1 + i*0.2}s`)
-                        .service-item.rounded.pt-3
-                            .p-4
-                                i.fa.fa-3x(class=feature.icon).text-primary.mb-4
-                                h5= feature.title
-                                p= feature.text
+                +featureBox('fa-map-marker', 'Locatie', 'Vlak aan het stadscentrum van Gent ligt de Blaarmeersen. Een prachtig recreatiedomein met mogelijkheid tot vele sporten.', '0.1s')
+                +featureBox('fa-utensils', 'Eten & Drinken', 'Er zullen foodtrucks en een bar aanwezig zijn.', '0.3s')
+                +featureBox('fa-users', 'Supporters', 'Iedereen is welkom om hun favoriete team aan te moedigen.', '0.5s')
+                +featureBox('fa-shower', 'Voorzieningen', 'Kleedkamers en douches worden voorzien voor de spelers.', '0.7s')
 
     // About Section
     .container-xxl.py-5
