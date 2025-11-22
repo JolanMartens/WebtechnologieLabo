@@ -15,7 +15,7 @@ function fillTable(teams) {
         let cell2 = row.insertCell(1);
         let cell3 = row.insertCell(2);
         
-        cell1.innerHTML = teams[i].teamname;
+        cell1.innerHTML = teams[i].teamName;
         cell2.innerHTML = teams[i].players[0] ? `${teams[i].players[0].firstName} ${teams[i].players[0].lastName}` : '—';
         cell3.innerHTML = teams[i].players[1] ? `${teams[i].players[1].firstName} ${teams[i].players[1].lastName}` : '—';
 
@@ -43,7 +43,7 @@ async function sortByTeamName() {
     const response = await fetch("/api/get_teams_with_players");
     const teamsList = await response.json();
 
-    teamsListSorted = teamsList.sort((a,b) => a.teamname.localeCompare(b.teamname));
+    teamsListSorted = teamsList.sort((a,b) => a.teamName.localeCompare(b.teamName));
     console.log("CLIENT:" + teamsListSorted);
     clearTable();
     fillTable(teamsListSorted);
