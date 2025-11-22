@@ -103,6 +103,32 @@ app.get('/api/get_player_list', async (req, res) => {
     }
 });
 
+app.get('/schrijf-je-in', async (req, res) => {
+  try {
+    const userId = req.cookies?.userId; // get cookie
+
+    if (!userId) {
+      // Not logged in => register
+      return res.redirect('/registerPage');
+    }
+
+    const db = await getDatabase();
+    const playersCollection = db.collection('players');
+    const currentUser = await playersCollection.findOne({ _id: new ObjectId(userId) });
+
+    if (!currentUser) {
+      // Cookie invalid => not logged in
+      return res.redirect('/registerPage');
+    }
+
+    // Logged in => new team page
+    return res.redirect('/newTeam');
+  } catch (error) {
+    console.error("Error in /schrijf-je-in route:", error);
+    res.redirect('/registerPage'); // fallback
+  }
+});
+
 // Add new player
 app.post('/api/new_player', async function(req, res) {
     try {
