@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient, ObjectId } = require('mongodb');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 
 require('dotenv').config(); // load environment values from .env file
 
@@ -15,6 +16,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
+app.use(cookieParser());
 
 // MongoDB connection
 const uri = process.env.MONGODB_URI;
