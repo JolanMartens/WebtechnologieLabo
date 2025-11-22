@@ -1,14 +1,14 @@
 extends layout
 
 block content
-    .container-xxl.px-0.bg-dark
-        .py-5.bg-dark.d-flex.align-items-center(style="min-height: 100vh !important;")
-            .p-5
-                h1.text-white.mb-4 Maak jouw spelersaccount aan
+  .container-xxl.px-0.bg-dark
+    .py-5.bg-dark.d-flex.align-items-center(style="min-height: 100vh !important;")
+      .p-5
+        h1.text-white.mb-4 Maak jouw spelersaccount aan
 
-                #message-container
+        #message-container
 
-                form(method="POST" action="/api/new_team")
+        form(method="POST" action="/api/new_team")
           .row.g-3.my-5
             .row
               .col-md-6
@@ -38,6 +38,5 @@ block content
             .col-12
               input.btn.btn-primary.w-100.py-3(type="submit" value="Maak aan")
 
-
 block scripts
-    script(src="/scripts/newTeam.js")
+  script(src="/scripts/newTeam.js")
