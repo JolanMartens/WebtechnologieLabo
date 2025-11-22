@@ -188,22 +188,65 @@ module.exports = app;
 
 
 app.post('/api/new_team', async (req, res) => {
-    try {
-        const { teamName } = req.body;
-        const db = await getDatabase();
-        const teamsCollection = db.collection('teams');
+  try {
+    const { teamName, secondFirstName, secondLastName, secondEmail, secondDateOfBirth } = req.body;
+    const db = await getDatabase();
+    const teamsCollection = db.collection('teams');
+    const playersCollection = db.collection('players');
 
-        const newTeam = {
-            teamName: teamName,
-            createdAt: new Date(),
-
-        };
-
-        const result = await teamsCollection.insertOne(newTeam);
-        res.status(201).json({ success: true, team: result.ops[0] });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to create team', details: error.message });
+    // 1. Check if team name already exists
+    const existingTeam = await teamsCollection.findOne({ teamName: teamName.trim() });
+    if (existingTeam) {
+      return res.status(400).json({ error: 'Team name already in use' });
     }
+
+    // 2. Get current logged-in user (from cookie/session)
+    const currentUserId = req.cookies?.userId; // assuming you set this at login
+    if (!currentUserId) {
+      return res.status(401).json({ error: 'Not logged in' });
+    }
+    const currentUser = await playersCollection.findOne({ _id: new ObjectId(currentUserId) });
+    if (!currentUser) {
+      return res.status(404).json({ error: 'Current user not found' });
+    }
+
+    // 3. Create new team
+    const teamResult = await teamsCollection.insertOne({
+      teamName: teamName.trim(),
+      createdAt: new Date(),
+      createdBy: currentUser._id
+    });
+    const teamId = teamResult.insertedId;
+
+    // 4. Update current user to be first player in team
+    await playersCollection.updateOne(
+      { _id: currentUser._id },
+      { $set: { teamId: teamId, role: 'captain' } }
+    );
+
+    // 5. Add second player
+    const secondPlayer = {
+      firstName: secondFirstName,
+      lastName: secondLastName,
+      email: secondEmail,
+      dateOfBirth: new Date(secondDateOfBirth),
+      teamId: teamId,
+      role: 'member'
+    };
+    const secondResult = await playersCollection.insertOne(secondPlayer);
+
+    res.status(201).json({
+      success: true,
+      team: { id: teamId, teamName },
+      players: [
+        { id: currentUser._id, firstName: currentUser.firstName, lastName: currentUser.lastName },
+        { id: secondResult.insertedId, firstName: secondFirstName, lastName: secondLastName }
+      ]
+    });
+  } catch (error) {
+    console.error('Error creating team:', error);
+    res.status(500).json({ error: 'Failed to create team', details: error.message });
+  }
 });
 
 app.get('/api/get_teams_with_players', async (req, res) => {
