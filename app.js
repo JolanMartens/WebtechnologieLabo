@@ -314,3 +314,33 @@ function getCookie(req, name) {
   const match = cookies.split(';').find(c => c.trim().startsWith(name + '='));
   return match ? match.split('=')[1] : null;
 }
+
+
+app.get('/teamButton', async (req, res) => {
+  try {
+    const userId = getCookie(req, 'userId');
+
+    if (!userId) {
+      return res.redirect('/registerPage');
+    }
+
+    const db = await getDatabase();
+    const playersCollection = db.collection('players');
+    const currentUser = await playersCollection.findOne({ _id: new ObjectId(userId) });
+
+    if (!currentUser) {
+      return res.redirect('/registerPage');
+    }
+
+    if (currentUser.teamId) {
+      return res.redirect('/jouwTeam');
+    } else {
+      return res.redirect('/newTeam');
+    }
+
+  } catch (error) {
+    console.error("Error in /teamButton route:", error);
+    res.redirect('/registerPage'); 
+  }
+
+});
