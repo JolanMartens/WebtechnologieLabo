@@ -117,6 +117,10 @@ app.get('/schrijf-je-in', async (req, res) => {
       return res.redirect('/registerPage');
     }
 
+    if (currentUser.teamId){
+      return res.redirect('/jouwTeam')
+    }
+
     return res.redirect('/newTeam');
   } catch (error) {
     console.error("Error in /schrijf-je-in route:", error);
