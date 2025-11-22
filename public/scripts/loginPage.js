@@ -33,8 +33,7 @@ loginForm.addEventListener('submit', async function(e) {
             localStorage.setItem('userLastName', data.player.lastName);
             document.cookie = `userLastName=${data.player.lastName}; path=/; max-age=86400`;
             localStorage.setItem('userId', data.player._id);
-            document.cookie = `userId=${data.player._id}; path=/; max-age=86400`;
-
+            document.cookie = `userId=${data.player._id.toString()}; path=/; max-age=86400`;
 
             // Show success message
             showMessage('Login succesvol! Je wordt doorgestuurd...', 'success');

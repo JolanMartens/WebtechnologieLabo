@@ -228,11 +228,12 @@ app.post('/api/new_team', async (req, res) => {
       return res.status(400).json({ error: 'Team name already in use' });
     }
 
-    // 2. Get current logged-in user (from cookie/session)
-    const currentUserId = getCookie(req, 'userId'); // assuming you set this at login
+    // 2. Get current logged-in user from cookie
+    const currentUserId = getCookie(req, 'userId');
     if (!currentUserId) {
       return res.status(401).json({ error: 'Not logged in' });
     }
+
     const currentUser = await playersCollection.findOne({ _id: new ObjectId(currentUserId) });
     if (!currentUser) {
       return res.status(404).json({ error: 'Current user not found' });
@@ -246,7 +247,7 @@ app.post('/api/new_team', async (req, res) => {
     });
     const teamId = teamResult.insertedId;
 
-    // 4. Update current user to be first player in team
+    // 4. Update current user
     await playersCollection.updateOne(
       { _id: currentUser._id },
       { $set: { teamId: teamId, role: 'captain' } }
