@@ -344,3 +344,37 @@ app.get('/teamButton', async (req, res) => {
   }
 
 });
+app.get('/api/get_my_team', async (req, res) => {
+  try {
+    const userId = getCookie(req, 'userId');
+    if (!userId) {
+      return res.status(401).json({ error: 'Not logged in' });
+    }
+
+    const db = await getDatabase();
+    const playersCollection = db.collection('players');
+    const teamsCollection = db.collection('teams');
+
+    const currentUser = await playersCollection.findOne({ _id: new ObjectId(userId) });
+    if (!currentUser || !currentUser.teamId) {
+      return res.status(404).json({ error: 'User has no team' });
+    }
+
+    const team = await teamsCollection.aggregate([
+      { $match: { _id: currentUser.teamId } },
+      {
+        $lookup: {
+          from: 'players',
+          localField: '_id',
+          foreignField: 'teamId',
+          as: 'players'
+        }
+      }
+    ]).toArray();
+
+    res.json(team[0]); // return just the user's team
+  } catch (error) {
+    console.error('Error fetching my team:', error);
+    res.status(500).json({ error: 'Failed to fetch team', details: error.message });
+  }
+});
