@@ -103,10 +103,9 @@ app.get('/api/get_player_list', async (req, res) => {
 
 app.get('/schrijf-je-in', async (req, res) => {
   try {
-    const userId = req.cookies?.userId; // get cookie
+    const userId = getCookie(req, 'userId');
 
     if (!userId) {
-      // Not logged in => register
       return res.redirect('/registerPage');
     }
 
@@ -115,15 +114,13 @@ app.get('/schrijf-je-in', async (req, res) => {
     const currentUser = await playersCollection.findOne({ _id: new ObjectId(userId) });
 
     if (!currentUser) {
-      // Cookie invalid => not logged in
       return res.redirect('/registerPage');
     }
 
-    // Logged in => new team page
     return res.redirect('/newTeam');
   } catch (error) {
     console.error("Error in /schrijf-je-in route:", error);
-    res.redirect('/registerPage'); // fallback
+    res.redirect('/registerPage');
   }
 });
 
@@ -309,3 +306,10 @@ app.get('/api/get_teams_with_players', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch teams with players', details: error.message });
     }
 });
+
+function getCookie(req, name) {
+  const cookies = req.headers.cookie;
+  if (!cookies) return null;
+  const match = cookies.split(';').find(c => c.trim().startsWith(name + '='));
+  return match ? match.split('=')[1] : null;
+}
