@@ -73,6 +73,11 @@ app.get('/cookies', (req, res) => {
     res.render('cookies', { title: 'cookies' });
 });
 
+app.get('/newTeam',(req, res) => {
+  res.render('newTeam', { title: 'Maak een nieuw team' });
+});
+
+
 
 // give the main htlml file when accessing root url
 /*app.get('/', (req, res) => {
