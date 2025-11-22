@@ -326,4 +326,203 @@ Would you like help picking one based on your specific project—like a website 
 
 Would you like to send the email automatically from your Express backend instead, using something like Nodemailer? I can help you set that up too.
 
+##########Q: I want to make "jouw team" appear if the person is part of a team and "maak team" if not instead of showing both now 
+a.nav-item.nav-link.nav-link-restricted(href="/jouwTeam" style="display: none;") Jouw team a.nav-item.nav-link.nav-link-restricted(href="/newTeam" style="display: none;") Maak team aan
+
+##########A:Got it 👍 — you want conditional rendering of those two links depending on whether the user is already part of a team. Right now both links are hidden with `style="display: none;"`. The clean way is to toggle visibility dynamically based on a variable (e.g. `user.hasTeam`).  
+
+Here are a few approaches depending on your stack:
+
+---
+
+### ✅ Pug/Jade (template-level logic)
+If you’re using Pug (your snippet looks like it), you can use conditionals directly:
+
+```pug
+if user.hasTeam
+  a.nav-item.nav-link.nav-link-restricted(href="/jouwTeam") Jouw team
+else
+  a.nav-item.nav-link.nav-link-restricted(href="/newTeam") Maak team aan
+```
+
+This way only one of the links is rendered at all — no need for `display: none`.
+
+---
+
+### ✅ JavaScript (client-side toggle)
+If you’re injecting both links but want to show/hide them dynamically:
+
+```html
+<a id="jouwTeamLink" class="nav-item nav-link nav-link-restricted" href="/jouwTeam" style="display:none;">Jouw team</a>
+<a id="maakTeamLink" class="nav-item nav-link nav-link-restricted" href="/newTeam" style="display:none;">Maak team aan</a>
+
+<script>
+  const userHasTeam = true; // replace with actual check
+
+  if (userHasTeam) {
+    document.getElementById("jouwTeamLink").style.display = "inline-block";
+  } else {
+    document.getElementById("maakTeamLink").style.display = "inline-block";
+  }
+</script>
+```
+
+---
+
+### ✅ Server-side rendering (recommended)
+If you know at render time whether the user has a team, don’t render both links. Just output the correct one. That avoids unnecessary DOM manipulation and keeps markup clean.
+
+---
+
+👉 Since you’re already working with modular pipelines and clean separation of concerns, I’d suggest **server-side conditional rendering in Pug**. It’s more maintainable and avoids hidden elements cluttering the DOM.
+
+Would you like me to show you how to wire this up so that `user.hasTeam` comes from your backend session or database check? That way it’s fully integrated instead of a hardcoded boolean.
+
+#######Q:Here's my code i hava now:
+function isLoggedIn() { //return localStorage.getItem('isLoggedIn') === 'true'; return getCookie('isLoggedIn'); }
+// set experationdate to past function deleteCookie(name) { document.cookie = ${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;; }
+function logout() { localStorage.removeItem('isLoggedIn'); localStorage.removeItem('userEmail'); localStorage.removeItem('userFirstName'); localStorage.removeItem('userLastName'); localStorage.removeItem('userId'); document.cookie deleteCookie('isLoggedIn'); deleteCookie('userEmail'); deleteCookie('userFirstName'); deleteCookie('userLastName'); deleteCookie('userId');
+window.location.href = '/';
+}
+function getCurrentUser() { if (!isLoggedIn()) return null;
+return {
+    email: getCookie('userEmail'),
+    firstName: getCookie('userFirstName'),
+    lastName: getCookie('userLastName'),
+    id: getCookie('userId')
+}
+return {
+    email: getCookie('userEmail'),
+    firstName: getCookie('userFirstName'),
+    lastName: getCookie('userLastName'),
+    id: getCookie('userId')
+}
+}
+function requireLogin() { if (!isLoggedIn()) { window.location.href = '/loginPage'; } }
+function updateNav() { // wait for nav to be loaded setTimeout(() => { const navButtons = document.querySelector('#accountOptions'); const navLinks = document.querySelector('#navbarFirstPart');
+    if (!navButtons) return;
+
+    if (isLoggedIn()) {
+        const user = getCurrentUser();
+
+        // replace accountOptions buttons with logout button
+        navButtons.innerHTML = `
+            <button class="btn btn-outline-warning py-2 px-4" onclick="logout()">
+                Uitloggen
+            </button>
+        `;
+
+        // make hidden nav options visible for logged in use
+        if (navLinks) {
+            // find and show the restricted links
+            const restrictedLinks = navLinks.querySelectorAll('.nav-link-restricted');
+            restrictedLinks.forEach(link => {
+                link.style.display = 'block';
+            });
+        }
+    }else{
+        // hide links for not logged-in users
+        if (navLinks) {
+            const restrictedLinks = navLinks.querySelectorAll('.nav-link-restricted');
+            restrictedLinks.forEach(link => {
+                link.style.display = 'none';
+            });
+        }
+    }
+}, 100);
+}
+if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', updateNav); } else { updateNav(); }
+function getCookie(dataname){ const value = ; ${document.cookie}; const parts = value.split(; ${dataname}=); if (parts.length == 2) return parts.pop().split(';').shift(); return null; }
+
+
+
+
+#######A:Perfect, Camille — I see what you’ve got here: a login/logout + nav toggle system based on cookies/localStorage. Right now your `updateNav()` function only distinguishes between *logged in* vs *not logged in*. To also handle the **team membership case** (show “Jouw team” if the user has a team, otherwise “Maak team aan”), you just need to extend the logic a bit.
+
+Here’s how you can do it cleanly:
+
+---
+
+### 1. Store team membership info
+When the user joins or creates a team, set a cookie or localStorage flag, e.g.:
+
+```js
+document.cookie = "hasTeam=true; path=/";
+```
+
+or
+
+```js
+localStorage.setItem("hasTeam", "true");
+```
+
+---
+
+### 2. Add a helper
+```js
+function hasTeam() {
+    return getCookie('hasTeam') === 'true'; 
+    // or localStorage.getItem('hasTeam') === 'true';
+}
+```
+
+---
+
+### 3. Update your `updateNav()` logic
+Instead of showing *all* `.nav-link-restricted`, target the specific links:
+
+```js
+function updateNav() {
+    setTimeout(() => {
+        const navButtons = document.querySelector('#accountOptions');
+        const navLinks = document.querySelector('#navbarFirstPart');
+
+        if (!navButtons) return;
+
+        if (isLoggedIn()) {
+            const user = getCurrentUser();
+
+            navButtons.innerHTML = `
+                <button class="btn btn-outline-warning py-2 px-4" onclick="logout()">
+                    Uitloggen
+                </button>
+            `;
+
+            if (navLinks) {
+                const jouwTeamLink = navLinks.querySelector('a[href="/jouwTeam"]');
+                const maakTeamLink = navLinks.querySelector('a[href="/newTeam"]');
+
+                if (hasTeam()) {
+                    if (jouwTeamLink) jouwTeamLink.style.display = 'block';
+                    if (maakTeamLink) maakTeamLink.style.display = 'none';
+                } else {
+                    if (jouwTeamLink) jouwTeamLink.style.display = 'none';
+                    if (maakTeamLink) maakTeamLink.style.display = 'block';
+                }
+            }
+        } else {
+            if (navLinks) {
+                const restrictedLinks = navLinks.querySelectorAll('.nav-link-restricted');
+                restrictedLinks.forEach(link => {
+                    link.style.display = 'none';
+                });
+            }
+        }
+    }, 100);
+}
+```
+
+---
+
+### 4. Result
+- Logged out → both links hidden.  
+- Logged in + hasTeam → “Jouw team” visible, “Maak team” hidden.  
+- Logged in + no team → “Maak team” visible, “Jouw team” hidden.  
+
+---
+
+This keeps your markup simple (both links exist in the DOM, but only one is shown at a time).  
+
+Would you like me to also show you how to **set `hasTeam` dynamically from the backend** (e.g. when rendering the page, inject it into a cookie or JS variable), so you don’t have to rely on manual toggling? That way the nav reflects the *real* team membership state automatically.
+
 
