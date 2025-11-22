@@ -344,6 +344,8 @@ app.get('/teamButton', async (req, res) => {
   }
 
 });
+
+
 app.get('/api/get_my_team', async (req, res) => {
   try {
     const userId = getCookie(req, 'userId');

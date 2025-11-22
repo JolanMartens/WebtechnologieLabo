@@ -2,15 +2,25 @@ async function showMyTeam() {
   const response = await fetch("/api/get_my_team");
   const myTeam = await response.json();
 
+  const teamsTable = document.querySelector('#teamsTable');
+
   if (myTeam.error) {
-    document.getElementById('user-info').innerHTML += `<p>${myTeam.error}</p>`;
+    let row = teamsTable.insertRow();
+    let cell = row.insertCell(0);
+    cell.colSpan = 3;
+    cell.innerHTML = myTeam.error;
     return;
   }
 
-  document.getElementById('user-info').innerHTML += `
-    <h3>Team: ${myTeam.teamName}</h3>
-    <ul>
-      ${myTeam.players.map(p => `<li>${p.firstName} ${p.lastName} (${p.email})</li>`).join('')}
-    </ul>
-  `;
+  // Add one row with team name and two players
+  let row = teamsTable.insertRow();
+  let cell1 = row.insertCell(0);
+  let cell2 = row.insertCell(1);
+  let cell3 = row.insertCell(2);
+
+  cell1.innerHTML = myTeam.teamName;
+  cell2.innerHTML = myTeam.players[0] ? `${myTeam.players[0].firstName} ${myTeam.players[0].lastName}` : '—';
+  cell3.innerHTML = myTeam.players[1] ? `${myTeam.players[1].firstName} ${myTeam.players[1].lastName}` : '—';
 }
+
+showMyTeam();
