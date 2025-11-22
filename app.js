@@ -229,7 +229,7 @@ app.post('/api/new_team', async (req, res) => {
     }
 
     // 2. Get current logged-in user (from cookie/session)
-    const currentUserId = req.cookies?.userId; // assuming you set this at login
+    const currentUserId = getCookie(req, 'userId'); // assuming you set this at login
     if (!currentUserId) {
       return res.status(401).json({ error: 'Not logged in' });
     }
