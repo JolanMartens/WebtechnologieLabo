@@ -16,15 +16,16 @@ block content
         // Teams Table
         .py-5.d-flex.align-items-center.justify-content-center
             .row.m-2.p-5.m-5
-                table.table.table-borderless.table-striped.rounded-4.overflow-hidden.shadow-lg#teamsTable
-                    thead
-                        tr.p-0.table-warning
-                            th Team
-                            th Eerste speler
-                            th Tweede speler
-                    tbody
-                button.btn.btn-primary#teamNameSort Sorteer op teamnaam
-                button.btn.btn-primary#refresh refresh
+                .p-0.py-5
+                    table.table.table-borderless.table-striped.rounded-4.overflow-hidden.shadow-lg#teamsTable
+                        thead
+                            tr.p-0.table-warning
+                                th Team
+                                th Eerste speler
+                                th Tweede speler
+                        tbody
+                    button.btn.btn-primary#teamNameSort Sorteer op teamnaam
+                    button.btn.btn-primary#refresh refresh
 
 block scripts
     script(src="/scripts/teamsPage.js")
