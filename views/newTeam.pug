@@ -9,45 +9,35 @@ block content
                 #message-container
 
                 form(method="POST" action="/api/new_team")
-                    .row.g-3.my-5
-                        .row
-                            .col-md-6
-                                .form-floating
-                                    input.form-control(type="text" id="firstName" name="firstName" required)
-                                    br
-                                    label(for="teamName") Teamnaam:
-                                    br
-                            .col-md-6
-                                .form-floating
-                                    input.form-control(type="text" id="firstName" name="firstName" required)
-                                    br
-                                    label(for="firstName") Voornaam speler 2:
-                                    br
+          .row.g-3.my-5
+            .row
+              .col-md-6
+                .form-floating
+                  input.form-control(type="text" id="teamName" name="teamName" required)
+                  label(for="teamName") Teamnaam:
+              .col-md-6
+                .form-floating
+                  input.form-control(type="text" id="secondFirstName" name="secondFirstName" required)
+                  label(for="secondFirstName") Voornaam speler 2:
 
-                            .col-md-6
-                                .form-floating
-                                    input.form-control(type="text" id="lastName" name="lastName" required)
-                                    br
-                                    label(for="lastName") Familiename speler 2:
-                                    br
+              .col-md-6
+                .form-floating
+                  input.form-control(type="text" id="secondLastName" name="secondLastName" required)
+                  label(for="secondLastName") Familienaam speler 2:
 
-                        .row
-                            .col-md-6
-                                .form-floating
-                                    input.form-control(type="email" id="email" name="email" required)
-                                    br
-                                    label(for="email") Email speler 2:
-                                    br
+            .row
+              .col-md-6
+                .form-floating
+                  input.form-control(type="email" id="secondEmail" name="secondEmail" required)
+                  label(for="secondEmail") Email speler 2:
+              .col-md-6
+                .form-floating
+                  input.form-control(type="date" id="secondDateOfBirth" name="secondDateOfBirth" required)
+                  label(for="secondDateOfBirth") Geboortedatum speler 2:
 
-                            .col-md-6
-                                .form-floating
-                                    input.form-control(type="date" id="dateOfBirth" name="dateOfBirth" required)
-                                    br
-                                    label(for="dateOfBirth") Geboortedatum speler 2:
-                                    br
+            .col-12
+              input.btn.btn-primary.w-100.py-3(type="submit" value="Maak aan")
 
-                        .col-12
-                            input.btn.btn-primary.w-100.py-3(type="submit" placeholder="Maak aan")
 
 block scripts
     script(src="/scripts/newTeam.js")
