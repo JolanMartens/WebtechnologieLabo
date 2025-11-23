@@ -33,6 +33,42 @@ async function getDatabase() {
     return client.db('GentTennisWedstrijd');
 }
 
+// Function to send email using Brevo REST API
+async function sendInviteEmail(toEmail, firstName, teamName, firstNameTeammate) {
+    const url = "https://api.brevo.com/v3/smtp/email";
+
+    const options = {
+        method: "POST",
+        headers: {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "api-key": process.env.BREVO_API_KEY
+        },
+        body: JSON.stringify({
+            sender: { email: process.env.SENDER_EMAIL, name: "Gent Tennis Admin" },
+            to: [{ email: toEmail, name: firstName }],
+            subject: `Uitnodiging voor team: ${teamName}`,
+            htmlContent: `
+                <html>
+                    <body>
+                        <h1>Hallo ${firstName},</h1>
+                        <p>  <strong>${firstNameTeammate}</strong> heeft u net lid gemaakt van het team <strong>${teamName}</strong>.</p>
+                        <p>Wilt u niet bij dit team horen? Verlaat het team op onze website via "MIJN ACCOUNT".</p>
+                        <a href="https://webtechnologie-labo.vercel.app"> Klik hier om naar onze site te gaan.</a>
+                    </body>
+                </html>
+            `
+        })
+    };
+
+    try {
+        await fetch(url, options);
+        console.log(`Email sent to ${toEmail}`);
+    } catch (error) {
+        console.error("Fetch Error:", error);
+    }
+}
+
 // Render pages with PUG
 app.get('/', (req, res) => {
     res.render('index', { title: 'Home - Tennis dubbelspel tornooi' });
@@ -134,10 +170,11 @@ app.get('/schrijf-je-in', async (req, res) => {
 
 // Add new player
 app.post('/api/new_player', async function(req, res) {
+    let teamId;
     try {
         console.log("SERVER: post_new_player called");
 
-        const { firstName, lastName, dateOfBirth, email, password} = req.body; // get player data from body
+        const {firstName, lastName, dateOfBirth, email, password} = req.body; // get player data from body
         const db = await getDatabase();
         const playersCollection = db.collection('players');
 
@@ -147,16 +184,8 @@ app.post('/api/new_player', async function(req, res) {
         });
 
         if (existingPlayer) {
-            return res.status(400).json({ error: 'player already exists' });
+            return res.status(400).json({error: 'player already exists'});
         }
-
-        if (teamId) {
-            const teamPlayerCount = await playersCollection.countDocuments({ teamId: new ObjectId(teamId) });
-            if (teamPlayerCount >= 2) {
-                return res.status(400).json({ error: 'Team already has two players' });
-            }
-        }
-
 
         // create new player object
         const newPlayer = {
@@ -165,7 +194,7 @@ app.post('/api/new_player', async function(req, res) {
             dateOfBirth: new Date(dateOfBirth),
             email: email,
             password: password,
-            teamId: teamId ? new ObjectId(teamId) : null
+            teamId: null
         }
 
         const result = await playersCollection.insertOne(newPlayer); // insert player into database
@@ -175,7 +204,7 @@ app.post('/api/new_player', async function(req, res) {
         res.redirect('/'); // go back to root
     } catch (error) {
         console.error('Error adding player:', error);
-        res.status(500).json({ error: 'Failed to add player', details: error.message });
+        res.status(500).json({error: 'Failed to add player', details: error.message});
     }
 });
 
@@ -271,6 +300,8 @@ app.post('/api/new_team', async (req, res) => {
       role: 'member'
     };
     const secondResult = await playersCollection.insertOne(secondPlayer);
+
+    await sendInviteEmail(secondEmail, secondFirstName, teamName, currentUser.firstName);
 
     res.status(201).json({
       success: true,
