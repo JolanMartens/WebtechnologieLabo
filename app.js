@@ -77,6 +77,10 @@ app.get('/newTeam',(req, res) => {
   res.render('newTeam', { title: 'Maak een nieuw team' });
 });
 
+app.get('/admin',(req, res) => {
+    res.render('admin', { title: 'admin' });
+});
+
 
 
 // give the main htlml file when accessing root url
