@@ -69,6 +69,30 @@ async function sendInviteEmail(toEmail, firstName, teamName, firstNameTeammate) 
     }
 }
 
+// Middleware to check if user is Admin
+async function requireAdmin(req, res, next) {
+    try {
+        const userId = getCookie(req, 'userId');
+
+        if (!userId) {
+            return res.redirect('/loginPage');
+        }
+
+        const db = await getDatabase();
+        const user = await db.collection('players').findOne({ _id: new ObjectId(userId) });
+
+        if (user && user.role === 'admin') { // log in user as admin else as user
+            return next();
+        } else {
+            console.log(`Unauthorized access attempt by ${user.email}`);
+            return res.status(403).render('error', { message: "Geen toegang: U bent geen beheerder." });
+        }
+    } catch (error) {
+        console.error("requireAdmin error:", error);
+        res.status(500).send("requireAdmin error");
+    }
+}
+
 // Render pages with PUG
 app.get('/', (req, res) => {
     res.render('index', { title: 'Home - Tennis dubbelspel tornooi' });
@@ -113,7 +137,7 @@ app.get('/newTeam',(req, res) => {
   res.render('newTeam', { title: 'Maak een nieuw team' });
 });
 
-app.get('/admin',(req, res) => {
+app.get('/admin',requireAdmin ,(req, res) => {
     res.render('admin', { title: 'admin' });
 });
 
@@ -170,7 +194,6 @@ app.get('/schrijf-je-in', async (req, res) => {
 
 // Add new player
 app.post('/api/new_player', async function(req, res) {
-    let teamId;
     try {
         console.log("SERVER: post_new_player called");
 
