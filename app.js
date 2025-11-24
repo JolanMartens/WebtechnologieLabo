@@ -69,7 +69,7 @@ async function sendInviteEmail(toEmail, firstName, teamName, firstNameTeammate) 
     }
 }
 
-// Middleware to check if user is Admin
+// check if user is Admin
 async function requireAdmin(req, res, next) {
     try {
         const userId = getCookie(req, 'userId');
@@ -84,14 +84,45 @@ async function requireAdmin(req, res, next) {
         if (user && user.role === 'admin') { // log in user as admin else as user
             return next();
         } else {
-            console.log(`Unauthorized access attempt by ${user.email}`);
-            return res.status(403).render('error', { message: "Geen toegang: U bent geen beheerder." });
+            return res.redirect('/index');
         }
     } catch (error) {
         console.error("requireAdmin error:", error);
         res.status(500).send("requireAdmin error");
     }
 }
+
+app.delete('/api/admin/delete_player/:id', async (req, res) => {
+    const userId = req.params.id;
+    const db = await getDatabase();
+
+    // Delete the player
+    await db.collection('players').deleteOne({_id: new ObjectId(userId)});
+
+    res.json({ success: true, message: 'Player deleted' });
+
+
+});
+
+app.put('/api/admin/update_player/:id', async (req, res) => {
+    const playerId = req.params.id;
+    const { firstName, lastName, email, role } = req.body;
+
+    const db = await getDatabase();
+
+    const result = await db.collection('players').updateOne(
+        { _id: new ObjectId(playerId) },
+        {
+            $set: {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+            }
+        });
+
+    console.log('player updated: ', result);
+    res.json({ success: true, message: 'player updated' });
+});
 
 // Render pages with PUG
 app.get('/', (req, res) => {

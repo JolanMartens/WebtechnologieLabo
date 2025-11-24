@@ -1,6 +1,51 @@
 extends layout
 
 block content 
-    .container-xxl.py-5.bg-dark.hero-header.mb-5
-        .container.my-5.py-5 
-            h1 admin page
+    .container-xxl.py-5.bg-dark.hero-header.pb-5
+        .container.py-5
+            h1.text-white.mb-4 Admin Dashboard
+
+            .row.mb-4
+                .col-md-6
+                    input#searchInput.form-control.p-3(type="text" placeholder="Zoek een speler via email")
+
+            .card.border-0
+                .card-body.p-0
+                    .table-responsive
+                        table.table.table-striped.table-hover.mb-0
+                            thead.bg-light
+                                tr
+                                    th Naam
+                                    th Email
+                                    th Team
+                                    th Acties
+                            tbody#playersTable
+
+    #editModal.modal.fade(tabindex="-1" aria-hidden="true")
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5.modal-title Speler Aanpassen
+                    button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+                .modal-body
+                    form#editForm
+                        input#editId(type="hidden")
+                        .mb-3
+                            label.form-label Voornaam
+                            input#editFirstName.form-control(type="text" required)
+                        .mb-3
+                            label.form-label Achternaam
+                            input#editLastName.form-control(type="text" required)
+                        .mb-3
+                            label.form-label Email
+                            input#editEmail.form-control(type="email" required)
+                        .mb-3
+                            label.form-label Team
+                            input#editTeam.form-control(type="text" required)
+                            // TODO: verander team van speler
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Annuleren
+                    button.btn.btn-primary#saveChangesBtn(type="button") Opslaan
+
+block append scripts
+    script(src="/scripts/adminPage.js")
