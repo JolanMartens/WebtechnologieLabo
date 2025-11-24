@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient, ObjectId } = require('mongodb');
 const path = require('path');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 require('dotenv').config(); // load environment values from .env file
 
@@ -241,14 +243,17 @@ app.post('/api/new_player', async function(req, res) {
             return res.status(400).json({error: 'player already exists'});
         }
 
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
         // create new player object
         const newPlayer = {
             firstName: firstName,
             lastName: lastName,
             dateOfBirth: new Date(dateOfBirth),
             email: email,
-            password: password,
-            teamId: null
+            password: hashedPassword,
+            teamId: null,
+            role: 'member'
         }
 
         const result = await playersCollection.insertOne(newPlayer); // insert player into database
@@ -277,8 +282,10 @@ app.post('/api/login', async function(req, res) {
        if (!player) {
            return res.status(400).json({ error: 'Wachtwoord of Email is fout/bestaat niet' });
        }
-       if (player.password !== password) {
-           return res.status(401).json({ error: 'Wachtwoord of Email is fout/bestaat niet' });
+       const isPasswordValid = await bcrypt.compare(password, player.password);
+
+       if (!isPasswordValid) {
+           return res.status(400).json({ error: 'Wachtwoord of Email is fout/bestaat niet' });
        }
 
        //send player data without password
