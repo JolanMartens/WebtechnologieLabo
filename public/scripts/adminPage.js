@@ -1,0 +1,113 @@
+document.addEventListener('DOMContentLoaded', () => {
+    getPlayerList();
+
+    document.getElementById('searchInput').addEventListener('keyup', filterTable);
+
+    document.getElementById('saveChangesBtn').addEventListener('click', savePlayerChanges);
+});
+
+let allPlayers = [];
+
+async function getPlayerList() {
+    const response = await fetch('/api/get_player_list');
+    allPlayers = await response.json();
+    renderTable(allPlayers);
+}
+
+function renderTable(players) {
+    const table = document.getElementById('playersTable');
+    table.innerHTML = '';
+
+    players.forEach(player => {
+        const tr = document.createElement('tr');
+
+        // TODO: toon teamnaam ipv "In een team"
+        const team = player.teamId
+            ? '<span class="text-success">In een team</span>'
+            : '<span class="text-warning">Geen team</span>';
+
+        tr.innerHTML = `
+            <td>${player.firstName} ${player.lastName}</td>
+            <td>${player.email}</td>
+            <td>${team}</td>
+            <td>
+                <button class="btn btn-sm btn-primary me-2" onclick="openEditModal('${player._id}')">
+                    <i class="fa fa-edit"></i> Bijwerken
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="deletePlayer('${player._id}')">
+                    <i class="fa fa-trash"></i> Verwijder
+                </button>
+            </td>
+        `;
+        table.appendChild(tr);
+    });
+}
+
+
+async function deletePlayer(id) {
+    const response = await fetch(`/api/admin/delete_player/${id}`, {
+        method: 'DELETE'
+    });
+    const result = await response.json();
+    if (result.success) {
+        getPlayerList();
+    } else {
+        console.log("error in deletePlayer" + result.error);
+    }
+
+}
+
+function openEditModal(id) {
+    const player = allPlayers.find(p => p._id === id);
+    if (!player) return;
+
+    // fill in the modal
+    document.getElementById('editId').value = player._id;
+    document.getElementById('editFirstName').value = player.firstName;
+    document.getElementById('editLastName').value = player.lastName;
+    document.getElementById('editEmail').value = player.email;
+    document.getElementById('editTeam').value = player.teamId; // FIXME: vervang door teamnaam
+
+    // show modal
+    const modal = new bootstrap.Modal(document.getElementById('editModal'));
+    modal.show();
+}
+
+async function savePlayerChanges() {
+    const id = document.getElementById('editId').value;
+    const data = {
+        firstName: document.getElementById('editFirstName').value,
+        lastName: document.getElementById('editLastName').value,
+        email: document.getElementById('editEmail').value,
+    };
+
+    try {
+        const response = await fetch(`/api/admin/update_player/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) { // close modal when results are saved and refresh list
+            const modalEl = document.getElementById('editModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            modal.hide();
+
+            getPlayerList();
+        } else {
+            console.log('error in savePlayerChanges');
+        }
+    } catch (error) {
+        console.log("error in savePlayerChanges: " + error);
+    }
+}
+
+function filterTable() {
+    const term = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = allPlayers.filter(player =>
+        player.email.toLowerCase().includes(term)
+    );
+    renderTable(filtered);
+}
