@@ -15,10 +15,10 @@ function fillTable(players) {
         let cell1 = row.insertCell(0);
         let cell2 = row.insertCell(1);
         let cell3 = row.insertCell(2);
-        
+
         cell1.innerHTML = players[i].firstName;
         cell2.innerHTML = players[i].lastName;
-        cell3.innerHTML = players[i].teamId;
+        cell3.innerHTML = players[i].teamName || 'No team';
     }
 }
 
@@ -33,7 +33,7 @@ function clearTable() {
 //init players table when page is loaded
 async function initplayersTable() {
     //getting the players
-    const response = await fetch("/api/get_player_list");
+    const response = await fetch("/api/get_players_with_teams");
     const players = await response.json();
     console.log(players);
     fillTable(players)
@@ -76,7 +76,7 @@ async function sortByLastName(){
    for (let i = 0; i < length - 1; i++) {
         for (let j = 0; j < length - 1 - i; j++) {
           // Compare adjacent elements based on the specified key
-          if (playersList[j]["lname"] > playersList[j + 1]["lname"]) {
+          if (playersList[j]["lastName"] > playersList[j + 1]["lastName"]) {
             // Swap the elements if they are in the wrong order
             const temp = playersList[j];
             playersList[j] = playersList[j + 1];

@@ -438,6 +438,36 @@ app.get('/teamButton', async (req, res) => {
 
 });
 
+app.get('/api/get_players_with_teams', async (req, res) => {
+    try {
+        const db = await getDatabase();
+        const players = await db.collection('players').aggregate([
+            {
+                $lookup: {
+                    from: 'teams',
+                    localField: 'teamId',
+                    foreignField: '_id',
+                    as: 'team'
+                }
+            },
+            {
+                $sort: { firstName: 1, lastName: 1 }
+            },
+            {
+                $project: {
+                    firstName: 1,
+                    lastName: 1,
+                    teamName: { $arrayElemAt: ['$team.teamName', 0] }
+                }
+            }
+        ]).toArray();
+
+        res.json(players);
+    } catch (error) {
+        console.error('Error fetching players with teams:', error);
+        res.status(500).json({ error: 'Failed to fetch players with teams', details: error.message });
+    }
+});
 
 app.get('/api/get_my_team', async (req, res) => {
   try {
