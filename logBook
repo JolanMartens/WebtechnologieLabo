@@ -526,3 +526,134 @@ This keeps your markup simple (both links exist in the DOM, but only one is show
 Would you like me to also show you how to **set `hasTeam` dynamically from the backend** (e.g. when rendering the page, inject it into a cookie or JS variable), so you don’t have to rely on manual toggling? That way the nav reflects the *real* team membership state automatically.
 
 
+
+#####Q: My leaflet API doesn't work on my website. It shows up double. Here is my code. 
+// Image switcher code var myImage = document.querySelector('img');
+// Personalized welcome message code var myButton = document.querySelector('button'); var myHeading = document.querySelector('h1');
+function setUserName(){ var myName = prompt('Please enter your name.'); localStorage.setItem('name', myName); }
+/if(!localStorage.getItem('name')){ setUserName(); } else { var storedName = localStorage.getItem('name'); }/
+myButton.onclick = function(){ //setUserName(); }
+document.addEventListener('DOMContentLoaded', () => { const gentCoords = [51.0443, 3.6881];
+if(document.getElementById('map')) { const map = L.map('map').setView(gentCoords, 15);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+L.marker(gentCoords).addTo(map)
+  .bindPopup('<b>Tennis Dubbelspel Gent</b><br>Blaarmeersen, Gent')
+  .openPopup();
+} });
+
+
+#####A:Thanks for sharing your script, Camille. Your Leaflet map initialization looks correct, but if the map isn't showing, here’s a focused checklist to help you troubleshoot:
+
+---
+
+## ✅ 1. **Ensure Leaflet CSS and JS Are Loaded**
+
+In your `layout.pug`, make sure these are included:
+
+```pug
+//- In the head
+link(rel="stylesheet", href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css")
+
+//- Before closing body
+script(src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js")
+script(src="/scripts/map.js") // assuming your script is saved here
+```
+
+---
+
+## ✅ 2. **Confirm the `#map` Element Exists and Has Size**
+
+In your Pug footer:
+
+```pug
+#map(style="width: 100%; height: 200px; border-radius: 8px;")
+```
+
+If the height is missing or set to `0`, the map won’t render. You can test by adding a border temporarily:
+
+```css
+#map {
+  border: 1px solid red;
+}
+```
+
+---
+
+## ✅ 3. **Check for JavaScript Errors**
+
+Open DevTools → Console tab and look for:
+- `L is not defined` → Leaflet JS not loaded
+- `Cannot read properties of null (reading 'setView')` → `#map` not found
+
+---
+
+## ✅ 4. **Verify Script Execution Timing**
+
+You're using `DOMContentLoaded`, which is correct. Just make sure `map.js` is loaded **after** Leaflet.
+
+---
+
+## ✅ 5. **Test in Isolation**
+
+Try rendering a minimal page with just the map to isolate the issue. If it works there, the problem is in your layout or script order.
+
+---
+
+Let me know if you’d like help adding multiple markers, custom icons, or switching to a dynamic map from MongoDB.
+
+#####Q: image
+#####A:Thanks Camille — based on the image and your previous code, it looks like your Leaflet map is rendering **twice** in the footer. That usually happens when:
+
+---
+
+## 🔍 Duplicate Map Initialization Causes
+
+### 1. **Multiple `#map` Elements**
+If your Pug layout or partials include `#map` more than once, Leaflet will try to initialize both. Confirm you only have one:
+
+```pug
+#map(style="width: 100%; height: 200px; border-radius: 8px;")
+```
+
+✅ Fix: Make sure this appears only once in the rendered HTML.
+
+---
+
+### 2. **Script Runs on Every Page**
+If `map.js` is loaded globally (e.g. in `layout.pug`), it will run on every page — even those without a map.
+
+✅ Fix: Wrap your Leaflet code in a conditional like you already did:
+
+```js
+if (document.getElementById('map')) {
+  // initialize map
+}
+```
+
+You can also move `map.js` to only load on pages that include the map:
+
+```pug
+block scripts
+  script(src="/scripts/map.js")
+```
+
+---
+
+### 3. **Multiple DOM Loads or Re-renders**
+If your page re-renders or includes dynamic content that duplicates the map container, Leaflet may reinitialize.
+
+✅ Fix: Ensure the map container is static and not duplicated by client-side rendering.
+
+---
+
+### 🧪 Debug Tip
+Open DevTools → Elements tab → search for `id="map"` and confirm it appears only once.
+
+---
+
+Would you like help modularizing your scripts so each page only loads what it needs? That would keep your frontend lean and prevent these kinds of overlaps.
+
