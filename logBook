@@ -657,3 +657,217 @@ Open DevTools → Elements tab → search for `id="map"` and confirm it appears 
 
 Would you like help modularizing your scripts so each page only loads what it needs? That would keep your frontend lean and prevent these kinds of overlaps.
 
+#####Q:How can i make a match bracket using teams from a database in javascript to use on my website
+extends layout
+
+block content
+    // Hero Header
+    .container-xxl.py-5.bg-dark.hero-header.mb-5
+        .container.my-5.py-5
+            .row.align-items-center.g-5
+                .col-lg-6.text-center.text-lg-start
+                    h1.display-3.text-white.animated.slideInLeft
+                        | Dubbelspeltornooi
+                        br
+                        | Gent
+                    p.text-white.animated.slideInLeft.mb-4.pb-2
+                        | Maak je klaar voor het leukste tennisevent van het jaar.
+                    a.btn.btn-primary.py-sm-3.px-sm-5.me-3.animated.slideInLeft(href="/schrijf-je-in") Schrijf je in
+                .col-lg-6.text-center.text-lg-end.overflow-hidden
+                    img.img-fluid(src="/images/tennisball.webp" alt="Tennisbal")
+
+    // Features
+    .container-xxl.py-5
+        .container
+            mixin featureBox(icon, title, text, delay)
+                .col-lg-3.col-sm-6.wow.fadeInUp(data-wow-delay=delay)
+                    .service-item.rounded.pt-3
+                        .p-4
+                            i.fa.fa-3x(class=icon).text-primary.mb-4
+                            h5= title
+                            p= text
+
+            .row.g-4
+                +featureBox('fa-map-marker', 'Locatie', 'Vlak aan het stadscentrum van Gent ligt de Blaarmeersen. Een prachtig recreatiedomein met mogelijkheid tot vele sporten.', '0.1s')
+                +featureBox('fa-utensils', 'Eten & Drinken', 'Er zullen foodtrucks en een bar aanwezig zijn.', '0.3s')
+                +featureBox('fa-users', 'Supporters', 'Iedereen is welkom om hun favoriete team aan te moedigen.', '0.5s')
+                +featureBox('fa-shower', 'Voorzieningen', 'Kleedkamers en douches worden voorzien voor de spelers.', '0.7s')
+
+    // About Section
+    .container-xxl.py-5
+        .container
+            .row.g-5.align-items-center
+                .col-lg-6
+                    .row.g-3
+                        .col-6.text-start
+                            img.img-fluid.rounded.w-100.wow.zoomIn(data-wow-delay="0.1s" src="/images/tennis1.jpg")
+                        .col-6.text-start
+                            img.img-fluid.rounded.w-75.wow.zoomIn(data-wow-delay="0.3s" src="/images/tennis2.jpg" style="margin-top: 25%;")
+                        .col-6.text-end
+                            img.img-fluid.rounded.w-75.wow.zoomIn(data-wow-delay="0.5s" src="/images/tennis3.jpg")
+                        .col-6.text-end
+                            img.img-fluid.rounded.w-100.wow.zoomIn(data-wow-delay="0.7s" src="/images/tennis4.jpg")
+                .col-lg-6
+                    h5.section-title.ff-secondary.text-start.text-primary.fw-normal Over ons
+                    h1.mb-4 Welkom bij dubbelspel Gent
+                    p.mb-4 Elk jaar organiseren wij één van de grootste tennistornooien voor dubbelspel.
+                    p.mb-4 Met zowel Belgische als internationale spelers is ons tornooi voor een gevarieerd publiek. Iedereen is welkom, zowel spelers als supporters. Tussen de wedstrijden door kan iets gedronken en gegeten worden en wordt randanimatie voorzien. Allen daarheen dus.
+
+    // Facebook Event
+    .container-xxl.py-5.text-center
+        h5.section-title.ff-secondary.text-primary.fw-normal.mb-4 Facebook Event
+        .d-flex.justify-content-center
+            .fb-page(
+                data-href="https://www.facebook.com/profile.php?id=61584281243243"
+                data-tabs="timeline"
+                data-width="500"
+                data-height="400"
+                data-small-header="false"
+                data-adapt-container-width="true"
+                data-hide-cover="false"
+                data-show-facepile="true"
+            )
+
+block append scripts
+    // Facebook SDK
+    #fb-root
+    script(async defer crossorigin="anonymous" src="https://connect.facebook.net/nl_BE/sdk.js#xfbml=1&version=v17.0" nonce="ABC123")
+
+    // Silktide Consent Manager
+    script(src="/scripts/silktide-consent-manager.js")
+    script(src="/scripts/cookie-config.js")
+
+#####A:Great — you want to **place a match bracket ABOVE the Facebook Event** in this Pug (Jade) template.
+
+Below is a clean, copy-paste-ready solution:
+
+---
+
+# ✅ 1. Add a Bracket Container Above the Facebook Event
+
+Find this section in your code:
+
+```pug
+// Facebook Event
+.container-xxl.py-5.text-center
+```
+
+And **insert your bracket section RIGHT BEFORE it**, like this:
+
+```pug
+// Bracket Section
+.container-xxl.py-5
+    .container
+        h5.section-title.ff-secondary.text-primary.fw-normal.mb-4 Tornooi Bracket
+        #bracket-container
+            p.text-center Loading bracket...
+```
+
+So the structure becomes:
+
+```pug
+// Bracket Section
+.container-xxl.py-5
+    .container
+        h5.section-title.ff-secondary.text-primary.fw-normal.mb-4 Tornooi Bracket
+        #bracket-container
+            p.text-center Loading bracket...
+
+// Facebook Event
+.container-xxl.py-5.text-center
+    h5.section-title.ff-secondary.text-primary.fw-normal.mb-4 Facebook Event
+    .d-flex.justify-content-center
+        .fb-page( ... )
+```
+
+---
+
+# ✅ 2. Add JavaScript to Load the Bracket
+
+Below your existing `block append scripts`, add this script:
+
+```pug
+script.
+    async function loadBracket() {
+        const bracketDiv = document.getElementById("bracket-container");
+
+        // Example fetching teams from your backend
+        const response = await fetch("/api/teams");
+        const teams = await response.json();
+
+        // Generate bracket pairs
+        const matches = [];
+        for (let i = 0; i < teams.length; i += 2) {
+            matches.push({
+                team1: teams[i],
+                team2: teams[i + 1] || { name: "Bye" }
+            });
+        }
+
+        // Render HTML
+        bracketDiv.innerHTML = matches
+            .map(
+                m => `
+                <div class="bracket-match">
+                    <div class="bracket-team">${m.team1.name}</div>
+                    <div class="bracket-vs">vs</div>
+                    <div class="bracket-team">${m.team2.name}</div>
+                </div>`
+            )
+            .join("");
+    }
+
+    loadBracket();
+```
+
+---
+
+# ✅ 3. Add simple CSS (optional but recommended)
+
+Put this inside your main CSS file:
+
+```css
+.bracket-match {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    font-family: sans-serif;
+}
+
+.bracket-team {
+    font-weight: 600;
+}
+
+.bracket-vs {
+    color: #555;
+}
+```
+
+---
+
+# 🎉 Result
+
+Your page will now show:
+
+**[Bracket]**
+**[Facebook Event]**
+
+…with teams dynamically loaded from your backend.
+
+---
+
+# Want me to generate a full multi-round bracket?
+
+I can build:
+
+* Single elimination (quarter → semi → final)
+* Automatic progression based on winners
+* Display using pure HTML/CSS or a JS library
+
+Just tell me the format you want.

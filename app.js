@@ -174,6 +174,9 @@ app.get('/admin',requireAdmin ,(req, res) => {
     res.render('admin', { title: 'admin' });
 });
 
+app.get('/matchbracket', (req, res)=> {
+    res.render('matchbracket', { title: 'matchbracket' });
+});
 
 
 // give the main htlml file when accessing root url
