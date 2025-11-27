@@ -142,12 +142,42 @@ function renderTeamScores(teams) {
                 <button class="btn btn-sm btn-success add-score" data-id="${team._id}" data-p="-1">-1</button>
                 <button class="btn btn-sm btn-primary add-score" data-id="${team._id}" data-p="1">+1</button>
                 <button class="btn btn-sm btn-warning add-score" data-id="${team._id}" data-p="3">+3</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteTeam('${team._id}')">
+                    <i class="fa fa-trash"></i> Verwijder
+                </button>
+
             </td>
         `;
 
         table.appendChild(tr);
     });
 }
+
+app.delete('/api/admin/delete_team/:id', async (req, res) => {
+    try {
+        const teamId = req.params.id;
+        const db = await getDatabase();
+
+        // Remove teamId from all players in that team
+        await db.collection('players').updateMany(
+            { teamId: new ObjectId(teamId) },
+            { $set: { teamId: null, role: 'member' } }
+        );
+
+        // Delete the team
+        const result = await db.collection('teams').deleteOne({ _id: new ObjectId(teamId) });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ success: false, message: 'Team not found' });
+        }
+
+        res.json({ success: true, message: 'Team deleted' });
+    } catch (error) {
+        console.error('Error deleting team:', error);
+        res.status(500).json({ success: false, message: 'Failed to delete team', error: error.message });
+    }
+});
+
 
 document.addEventListener("click", async (e) => {
     if (e.target.classList.contains("add-score")) {

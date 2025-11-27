@@ -543,3 +543,14 @@ app.get('/api/get_my_team', async (req, res) => {
 });
 
 
+app.delete('/api/admin/delete_team/:id', async (req, res) => {
+    const teamId = req.params.id;
+    const db = await getDatabase();
+
+    // Delete the team
+    await db.collection('teams').deleteOne({_id: new ObjectId(teamId)});
+
+    res.json({ success: true, message: 'team deleted' });
+
+
+});
