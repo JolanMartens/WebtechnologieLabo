@@ -153,6 +153,19 @@ function renderTeamScores(teams) {
     });
 }
 
+async function deleteTeam(id) {
+    const response = await fetch(`/api/admin/delete_team/${id}`, {
+        method: 'DELETE'
+    });
+    const result = await response.json();
+    if (result.success) {
+        loadTeams();
+    } else {
+        console.log("error in deleteTeam" + result.error);
+    }
+
+}
+
 app.delete('/api/admin/delete_team/:id', async (req, res) => {
     try {
         const teamId = req.params.id;
