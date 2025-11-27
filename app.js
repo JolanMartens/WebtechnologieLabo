@@ -423,6 +423,7 @@ app.get('/api/get_teams_with_players', async (req, res) => {
             {
                 $project: {
                     teamName: 1,
+                    score: 1,
                     players: {
                         firstName: 1,
                         lastName: 1,
