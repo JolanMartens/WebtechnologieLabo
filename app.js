@@ -315,6 +315,32 @@ if (process.env.NODE_ENV !== 'production') {
 // Export for Vercel
 module.exports = app;
 
+app.put('/api/teams/:id/add_score', async (req, res) => {
+  try {
+    const teamId = req.params.id;
+    const { points } = req.body;
+
+    const db = await getDatabase();
+    const teamsCollection = db.collection('teams');
+
+    const result = await teamsCollection.updateOne(
+      { _id: new ObjectId(teamId) },
+      { $inc: { score: points } }  
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ error: "Team not found" });
+    }
+
+    res.json({ success: true, message: "Score updated" });
+
+  } catch (error) {
+    console.error("Error adding score:", error);
+    res.status(500).json({ error: "Failed to update score" });
+  }
+});
+
+
 
 app.post('/api/new_team', async (req, res) => {
   try {
@@ -344,7 +370,8 @@ app.post('/api/new_team', async (req, res) => {
     const teamResult = await teamsCollection.insertOne({
       teamName: teamName.trim(),
       createdAt: new Date(),
-      createdBy: currentUser._id
+      createdBy: currentUser._id,
+      score: 0
     });
     const teamId = teamResult.insertedId;
 
