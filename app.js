@@ -542,18 +542,3 @@ app.get('/api/get_my_team', async (req, res) => {
 });
 
 
-app.put('/api/admin/fix_team_scores', requireAdmin, async (req, res) => {
-  try {
-    const db = await getDatabase();
-    const teamsCollection = db.collection('teams');
-
-    const result = await teamsCollection.updateMany(
-      { score: { $exists: false } },   // only teams WITHOUT score
-      { $set: { score: 0 } }
-    );
-
-    res.json({ success: true, updated: result.modifiedCount });
-  } catch (error) {
-    res.status(500).json({ error: 'Error updating team scores', details: error.message });
-  }
-});
