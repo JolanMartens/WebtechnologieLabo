@@ -112,10 +112,9 @@ function filterTable() {
     renderTable(filtered);
 }
 
-// ---- TEAM SCORE SECTION ----
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadTeams();  // load teams when admin page loads
+    loadTeams();  
 });
 
 async function loadTeams() {
@@ -144,6 +143,7 @@ function renderTeamScores(teams) {
         table.appendChild(tr);
     });
 }
+
 document.addEventListener("click", async (e) => {
     if (e.target.classList.contains("add-score")) {
         const teamId = e.target.getAttribute("data-id");
