@@ -139,9 +139,9 @@ function renderTeamScores(teams) {
             <td>${team.teamName}</td>
             <td>${team.score}</td>
             <td>
-                <button class="btn btn-sm btn-success add-score" data-id="${team._id}" data-p="1">+1</button>
-                <button class="btn btn-sm btn-primary add-score" data-id="${team._id}" data-p="3">+3</button>
-                <button class="btn btn-sm btn-warning add-score" data-id="${team._id}" data-p="5">+5</button>
+                <button class="btn btn-sm btn-success add-score" data-id="${team._id}" data-p="-1">-1</button>
+                <button class="btn btn-sm btn-primary add-score" data-id="${team._id}" data-p="1">+1</button>
+                <button class="btn btn-sm btn-warning add-score" data-id="${team._id}" data-p="3">+3</button>
             </td>
         `;
 
