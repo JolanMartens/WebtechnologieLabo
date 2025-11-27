@@ -111,3 +111,50 @@ function filterTable() {
     );
     renderTable(filtered);
 }
+
+// ---- TEAM SCORE SECTION ----
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadTeams();  // load teams when admin page loads
+});
+
+async function loadTeams() {
+    const response = await fetch('/api/teams/sorted');
+    const teams = await response.json();
+    renderTeamScores(teams);
+}
+
+function renderTeamScores(teams) {
+    const table = document.getElementById('teamScoreTable');
+    table.innerHTML = '';
+
+    teams.forEach(team => {
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
+            <td>${team.teamName}</td>
+            <td>${team.score}</td>
+            <td>
+                <button class="btn btn-sm btn-success add-score" data-id="${team._id}" data-p="1">+1</button>
+                <button class="btn btn-sm btn-primary add-score" data-id="${team._id}" data-p="3">+3</button>
+                <button class="btn btn-sm btn-warning add-score" data-id="${team._id}" data-p="5">+5</button>
+            </td>
+        `;
+
+        table.appendChild(tr);
+    });
+}
+document.addEventListener("click", async (e) => {
+    if (e.target.classList.contains("add-score")) {
+        const teamId = e.target.getAttribute("data-id");
+        const points = parseInt(e.target.getAttribute("data-p"));
+
+        await fetch(`/api/teams/${teamId}/add_score`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ points })
+        });
+
+        loadTeams(); // refresh score table
+    }
+});
