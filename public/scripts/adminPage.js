@@ -118,9 +118,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loadTeams() {
-    const response = await fetch('/api/teams/sorted');
-    const teams = await response.json();
-    renderTeamScores(teams);
+    try {
+        const response = await fetch('/api/get_teams_with_players');
+        const teams = await response.json();
+        console.log('Teams loaded:', teams); // debug
+        renderTeamScores(teams);
+    } catch (error) {
+        console.error('Error loading teams:', error);
+    }
 }
 
 function renderTeamScores(teams) {
