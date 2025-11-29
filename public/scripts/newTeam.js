@@ -7,8 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
 if (registerForm) {
   registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    // Nieuwe team form data
     const formData = {
       teamName: document.getElementById('teamName')?.value,
       secondFirstName: document.getElementById('secondFirstName')?.value,
@@ -35,8 +33,8 @@ if (registerForm) {
       console.log('Response new team:', data);
 
       if (response.ok && data.success) {
-        // Redirect naar mijnTeam pagina
-        window.location.href = '/mijnTeam';
+        // Redirect naar jouwTeam pagina
+        window.location.href = '/jouwTeam';
       } else {
         const msgContainer = document.getElementById('message-container');
         if (msgContainer) {
