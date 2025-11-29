@@ -11,6 +11,7 @@ let allPlayers = [];
 async function getPlayerList() {
     const response = await fetch('/api/get_player_list');
     allPlayers = await response.json();
+    console.log(allPlayers);
     renderTable(allPlayers);
 }
 
@@ -21,9 +22,8 @@ function renderTable(players) {
     players.forEach(player => {
         const tr = document.createElement('tr');
 
-        // TODO: toon teamnaam ipv "In een team"
         const team = player.teamId
-            ? '<span class="text-success">In een team</span>'
+            ? `<span class="text-success">${player.teamName}</span>`
             : '<span class="text-warning">Geen team</span>';
 
         tr.innerHTML = `
@@ -66,19 +66,24 @@ function openEditModal(id) {
     document.getElementById('editFirstName').value = player.firstName;
     document.getElementById('editLastName').value = player.lastName;
     document.getElementById('editEmail').value = player.email;
-    document.getElementById('editTeam').value = player.teamId; // FIXME: vervang door teamnaam
+    document.getElementById('editTeam').value = player.teamId;
 
     // show modal
     const modal = new bootstrap.Modal(document.getElementById('editModal'));
     modal.show();
+    fillModalTeamsDropdown(player.teamId);
+
 }
 
 async function savePlayerChanges() {
     const id = document.getElementById('editId').value;
+    const newTeamId = document.getElementById('editTeam').value;
+
     const data = {
         firstName: document.getElementById('editFirstName').value,
         lastName: document.getElementById('editLastName').value,
         email: document.getElementById('editEmail').value,
+        teamId: newTeamId === 'null' ? null : newTeamId,
     };
 
     try {
@@ -90,12 +95,12 @@ async function savePlayerChanges() {
 
         const result = await response.json();
 
-        if (result.success) { // close modal when results are saved and refresh list
+        if (response.ok && result.success) {
             const modalEl = document.getElementById('editModal');
             const modal = bootstrap.Modal.getInstance(modalEl);
             modal.hide();
 
-            getPlayerList();
+            await getPlayerList();
         } else {
             console.log('error in savePlayerChanges');
         }
@@ -153,6 +158,46 @@ function renderTeamScores(teams) {
     });
 }
 
+async function fillModalTeamsDropdown(teamId) {
+    try {
+        const dropdown = document.getElementById('editTeam');
+        if (!dropdown) return;
+
+        const response = await fetch("/api/get_teams_with_players");
+        const teams = await response.json();
+
+        while (dropdown.options.length > 1) {
+            dropdown.remove(1);
+        }
+
+        teams.forEach(team => {
+            const teamIdString = team._id.toString();
+            const notFull = team.players.length < 2;
+            const isCurrentTeam = teamId === teamIdString;
+
+            if (notFull || isCurrentTeam) {
+                const option = document.createElement('option');
+                option.value = team._id;
+
+                if ((isCurrentTeam && !notFull) || isCurrentTeam) {
+                    option.textContent = `${team.teamName} (Huidig)`;
+                } else {
+                    option.textContent = `${team.teamName}`;
+                }
+
+                if (isCurrentTeam) {
+                    option.selected = true;
+                }
+
+                dropdown.appendChild(option);
+            }
+
+        });
+    } catch (err) {
+        console.error('Error filling dropdown:', err);
+    }
+}
+
 async function deleteTeam(id) {
     const response = await fetch(`/api/admin/delete_team/${id}`, {
         method: 'DELETE'
@@ -206,3 +251,4 @@ document.addEventListener("click", async (e) => {
         loadTeams(); // refresh score table
     }
 });
+

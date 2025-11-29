@@ -143,23 +143,41 @@ app.delete('/api/admin/delete_player/:id', async (req, res) => {
 });
 
 app.put('/api/admin/update_player/:id', async (req, res) => {
-    const playerId = req.params.id;
-    const { firstName, lastName, email, role } = req.body;
+    try{
+        const playerId = req.params.id;
+        const { firstName, lastName, email, teamId } = req.body;
 
-    const db = await getDatabase();
+        if (!ObjectId.isValid(playerId)) {
+            return res.status(400).json({ success: false, error: 'Invalid Player ID' });
+        }
+        const db = await getDatabase();
+        const playersCollection = db.collection('players');
+        const updatedPlayer = {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+        }
+        let newTeamId = null;
+        if (teamId && teamId !== 'null') {
+            newTeamId = new ObjectId(teamId);
+        }
+        updatedPlayer.teamId = newTeamId;
 
-    const result = await db.collection('players').updateOne(
-        { _id: new ObjectId(playerId) },
-        {
-            $set: {
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
-            }
-        });
+        const result = await playersCollection.updateOne(
+            { _id: new ObjectId(playerId) },
+            { $set: updatedPlayer }
+        );
 
-    console.log('player updated: ', result);
-    res.json({ success: true, message: 'player updated' });
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ success: false, error: 'Player not found' });
+        }
+
+        return res.json({ success: true, message: 'Speler succesvol bijgewerkt.' });
+
+    } catch(error) {
+        console.error("Updating player", error);
+    }
+
 });
 
 // Render pages with PUG
@@ -227,7 +245,30 @@ app.get('/api/get_player_list', async (req, res) => {
 
         const db = await getDatabase();
         const playersCollection = db.collection('players'); // get players collection
-        const players = await playersCollection.find({}).sort({ firstName: 1, lastName: 1 }).toArray(); // get all players and sort by firstName and LastName
+        const players = await playersCollection.aggregate([
+            {
+                $lookup: {
+                    from: 'teams',
+                    localField: 'teamId',
+                    foreignField: '_id',
+                    as: 'teamInfo'
+                }
+            },
+            {
+                $addFields: {
+                    teamName: { $arrayElemAt: ["$teamInfo.teamName", 0] }
+                }
+            },
+            {
+                $unwind: {
+                    path: '$team',
+                    preserveNullAndEmptyArrays: true // keep players without a team in the list
+                }
+            },
+            {
+                $sort: { firstName: 1, lastName: 1 }
+            }
+        ]).toArray();
 
         res.json(players); // send player data back
 
