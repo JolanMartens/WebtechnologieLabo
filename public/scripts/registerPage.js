@@ -1,7 +1,45 @@
+const registerForm = document.querySelector('form[action="/api/new_player"]');
 
+if (registerForm) {
+    registerForm.addEventListener('submit', async function(e) {
+        e.preventDefault(); // prevent default form submission bcs initializing localStorage first on client side
 
-const makeTeamButton = document.getElementById('makeTeam');
-makeTeamButton.addEventListener('click', makeNewTeam);
+        // Get values from form
+        const formData = {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            email: document.getElementById('email').value,
+            dateOfBirth: document.getElementById('dateOfBirth').value,
+            password: document.getElementById('password').value
+        };
+
+        try {
+            const response = await fetch('/api/new_player', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userEmail', data.player.email);
+                localStorage.setItem('userFirstName', data.player.firstName);
+                localStorage.setItem('userLastName', data.player.lastName);
+                localStorage.setItem('userId', data.player._id);
+
+                window.location.href = '/';
+            } else {
+                console.error('error bij het maken van speler');
+            }
+        } catch (error) {
+            console.error('Register error:', error);
+        }
+    });
+}
 
 async function getPlayerList(){
     const response = await fetch("/api/get_player_list");

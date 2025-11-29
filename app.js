@@ -263,7 +263,27 @@ app.post('/api/new_player', async function(req, res) {
 
         console.log("succesfully added player: ", result);
 
-        res.redirect('/'); // go back to root
+        res.cookie('userId', result.insertedId.toString(), {
+            maxAge: 86400000,
+            httpOnly: false,
+            path: '/'
+        });
+        res.cookie('isLoggedIn', 'true', {
+            maxAge: 86400000,
+            httpOnly: false,
+            path: '/'
+        });
+
+        res.json({
+            success: true,
+            player: {
+                _id: result.insertedId,
+                firstName: firstName,
+                lastName: lastName,
+                email: email
+            }
+        });
+
     } catch (error) {
         console.error('Error adding player:', error);
         res.status(500).json({error: 'Failed to add player', details: error.message});
