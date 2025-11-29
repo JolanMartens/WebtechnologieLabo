@@ -416,124 +416,128 @@ if (process.env.NODE_ENV !== 'production') {
 module.exports = app;
 
 app.put('/api/teams/:id/add_score', async (req, res) => {
-  try {
-    const teamId = req.params.id;
-    const { points } = req.body;
+    try {
+        const teamId = req.params.id;
+        const { points } = req.body;
 
-    const db = await getDatabase();
-    const teamsCollection = db.collection('teams');
+        const db = await getDatabase();
+        const teamsCollection = db.collection('teams');
 
-    const result = await teamsCollection.updateOne(
-      { _id: new ObjectId(teamId) },
-      { $inc: { score: points } }  
-    );
+        const result = await teamsCollection.updateOne(
+            { _id: new ObjectId(teamId) },
+            { $inc: { score: points } }
+        );
 
-    if (result.modifiedCount === 0) {
-      return res.status(404).json({ error: "Team not found" });
-    }
+        if (result.modifiedCount === 0) {
+            return res.status(404).json({ error: "Team not found" });
+        }
 
-    res.json({ success: true, message: "Score updated" });
+        res.json({ success: true, message: "Score updated" });
 
-  } catch (error) {
-    console.error("Error adding score:", error);
-    res.status(500).json({ error: "Failed to update score" });
-  }
+        } catch (error) {
+            console.error("Error adding score:", error);
+            res.status(500).json({ error: "Failed to update score" });
+        }
 });
 
 
 
 app.post('/api/new_team', async (req, res) => {
-  try {
-    const { teamName, secondFirstName, secondLastName, secondEmail, secondDateOfBirth } = req.body;
-    const db = await getDatabase();
-    const teamsCollection = db.collection('teams');
-    const playersCollection = db.collection('players');
-    const matchesCollection = db.collection('matches');
-
-    // 1. Check if team name already exists
-    const existingTeam = await teamsCollection.findOne({ teamName: teamName.trim() });
-    if (existingTeam) {
-      return res.status(400).json({ error: 'Team name already in use' });
-    }
-
-    // 2. Get current logged-in user
-    const currentUserId = getCookie(req, 'userId');
+    const { teamName, emailTeammate} = req.body;
+    const currentUserId = req.headers['x-user-id'];
     if (!currentUserId) {
-      return res.status(401).json({ error: 'Not logged in' });
+        return res.status(401).json({success: false, error: 'User not logged in'});
     }
 
-    const currentUser = await playersCollection.findOne({ _id: new ObjectId(currentUserId) });
-    if (!currentUser) {
-      return res.status(404).json({ error: 'Current user not found' });
-    }
+    try {
+        const db = await getDatabase();
+        const teamsCollection = db.collection('teams');
+        const playersCollection = db.collection('players');
+        const matchesCollection = db.collection('matches');
 
-    // 3. Create new team
-    const teamResult = await teamsCollection.insertOne({
-      teamName: teamName.trim(),
-      createdAt: new Date(),
-      createdBy: currentUser._id,
-      score: 0
-    });
-    const teamId = teamResult.insertedId;
+        // Check if team name already exists
+        const existingTeam = await teamsCollection.findOne({ teamName: teamName.trim() });
+        if (existingTeam) {
+            return res.status(400).json({ success: false, error: "Teamnaam is al in gebruik." });
+        }
 
-    // 4. Update current user
-    await playersCollection.updateOne(
-      { _id: currentUser._id },
-      { $set: { teamId: teamId, role: 'captain' } }
-    );
+        // check if email exists
+        const teamMate = await playersCollection.findOne({ email: emailTeammate });
+        if (!teamMate) {
+            return res.status(400).json({ success: false, error: "email van speler bestaat niet" });
+        }
 
-    // 5. Add second player
-    const secondPlayer = {
-      firstName: secondFirstName,
-      lastName: secondLastName,
-      email: secondEmail,
-      dateOfBirth: new Date(secondDateOfBirth),
-      teamId: teamId,
-      role: 'member'
-    };
-    const secondResult = await playersCollection.insertOne(secondPlayer);
+        if (teamMate.teamId !== null) {
+            return res.status(400).json({ success: false, error: `Teamgenoot ${playerB.firstName} zit al in een team.` });
+        }
 
-    await sendInviteEmail(secondEmail, secondFirstName, teamName, currentUser.firstName);
+        // Get current logged-in user
+        const currentUserId = getCookie(req, 'userId');
+        if (!currentUserId) {
+          return res.status(401).json({ error: 'Je bent niet ingelogd' });
+        }
 
-    // 6. Balanced random assignment
-    const gameCounts = await matchesCollection.aggregate([
-      { $group: { _id: "$teamAId", games: { $sum: 1 } } },
-      { $unionWith: {
-          coll: "matches",
-          pipeline: [
-            { $group: { _id: "$teamBId", games: { $sum: 1 } } }
+        const currentUser = await playersCollection.findOne({ _id: new ObjectId(currentUserId) });
+        if (!currentUser) {
+          return res.status(404).json({ error: 'Current user not found' });
+        }
+
+        // Create new team
+        const teamResult = await teamsCollection.insertOne({
+          teamName: teamName.trim(),
+          createdAt: new Date(),
+          createdBy: currentUser._id,
+          score: 0
+        });
+        const teamId = teamResult.insertedId;
+
+        // Update current user
+        await playersCollection.updateMany(
+          { _id: { $in: [teamMate._id, currentUser._id] } },
+          { $set: { teamId: teamId, role: 'member' } }
+        );
+
+        await sendInviteEmail(emailTeammate, teamMate.firstName, teamName, currentUser.firstName);
+
+        // 6. Balanced random assignment
+        const gameCounts = await matchesCollection.aggregate([
+          { $group: { _id: "$teamAId", games: { $sum: 1 } } },
+          { $unionWith: {
+              coll: "matches",
+              pipeline: [
+                { $group: { _id: "$teamBId", games: { $sum: 1 } } }
+              ]
+          }}
+        ]).toArray();
+
+        const countsMap = {};
+        gameCounts.forEach(c => countsMap[c._id.toString()] = c.games);
+
+        const opponents = await teamsCollection.find({ _id: { $ne: teamId } }).toArray();
+        opponents.sort((a, b) => (countsMap[a._id.toString()] || 0) - (countsMap[b._id.toString()] || 0));
+
+        if (opponents.length > 0) {
+          const opponent = opponents[0]; // team with fewest games
+          await matchesCollection.insertOne({
+            teamAId: teamId,
+            teamBId: opponent._id,
+            scoreA: 0,
+            scoreB: 0,
+          });
+        }
+
+        res.status(201).json({
+          success: true,
+          team: { id: teamId, teamName },
+          players: [
+            { id: currentUser._id, firstName: currentUser.firstName, lastName: currentUser.lastName },
+            { id: teamMate._id, firstName: teamMate.firstName, lastName: teamMate.lastName },
           ]
-      }}
-    ]).toArray();
-
-    const countsMap = {};
-    gameCounts.forEach(c => countsMap[c._id.toString()] = c.games);
-
-    const opponents = await teamsCollection.find({ _id: { $ne: teamId } }).toArray();
-    opponents.sort((a, b) => (countsMap[a._id.toString()] || 0) - (countsMap[b._id.toString()] || 0));
-
-    if (opponents.length > 0) {
-      const opponent = opponents[0]; // team with fewest games
-      await matchesCollection.insertOne({
-        teamAId: teamId,
-        teamBId: opponent._id,
-        scoreA: 0,
-        scoreB: 0,
-      });
+        });
+    } catch (error) {
+        console.error('Error creating team:', error);
+        res.status(500).json({ error: 'Failed to create team', details: error.message });
     }
-
-    res.status(201).json({
-      success: true,
-      team: { id: teamId, teamName },
-      players: [
-        { id: currentUser._id, firstName: currentUser.firstName, lastName: currentUser.lastName },
-        { id: secondResult.insertedId, firstName: secondFirstName, lastName: secondLastName }
-      ]
-    });
-  } catch (error) {
-    console.error('Error creating team:', error);
-    res.status(500).json({ error: 'Failed to create team', details: error.message });
-  }
 });
 
 app.get('/api/get_teams_with_players', async (req, res) => {

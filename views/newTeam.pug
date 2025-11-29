@@ -1,41 +1,25 @@
 extends layout
 
 block content
-  .container-xxl.px-0.bg-dark
-    .py-5.bg-dark.d-flex.align-items-center(style="min-height: 100vh !important;")
-      .p-5
-        h1.text-white.mb-4 Maak jouw team aan
-
-        #message-container
-
-        form#registerForm(method="POST" action="/api/new_team")
-          .row.g-3.my-5
-            .row
+  .container-xl.py-5.bg-dark.hero-header.mt-5
+    .container.py-5.mt-5
+      .row.justify-content-center
+        .col-md-6
+          h1.text-white.mb-4 Maak jouw team aan
+          #message-container
+          form#registerForm(method="POST" action="/api/new_team")
+            .row.g-3.my-4
               .col-md-6
                 .form-floating
                   input.form-control(type="text" id="teamName" name="teamName" required)
                   label(for="teamName") Teamnaam:
               .col-md-6
                 .form-floating
-                  input.form-control(type="text" id="secondFirstName" name="secondFirstName" required)
-                  label(for="secondFirstName") Voornaam speler 2:
-              .col-md-6
-                .form-floating
-                  input.form-control(type="text" id="secondLastName" name="secondLastName" required)
-                  label(for="secondLastName") Familienaam speler 2:
+                  input.form-control(type="email" id="emailTeammate" name="emailTeammate" required)
+                  label(for="emailTeammate") E-mail van teamgenoot:
+            .d-grid.mt-3
+              button.btn.btn-primary.py-3(type="submit") Maak aan
 
-            .row
-              .col-md-6
-                .form-floating
-                  input.form-control(type="email" id="secondEmail" name="secondEmail" required)
-                  label(for="secondEmail") Email speler 2:
-              .col-md-6
-                .form-floating
-                  input.form-control(type="date" id="secondDateOfBirth" name="secondDateOfBirth" required)
-                  label(for="secondDateOfBirth") Geboortedatum speler 2:
-
-            .col-12
-              input.btn.btn-primary.w-100.py-3(type="submit" value="Maak aan")
 
 block scripts
   script(src="/scripts/newTeam.js")

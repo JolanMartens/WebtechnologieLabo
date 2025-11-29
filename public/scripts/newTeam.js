@@ -1,31 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
   const makeTeamButton = document.getElementById('makeTeam');
-  const teamForm = document.getElementById('team-form');
-  const refreshTeamMateList = document.getElementById('refresh-team-list');
   const registerForm = document.getElementById('registerForm');
+
+  function showMessage(message, type) {
+    const msgContainer = document.getElementById('message-container');
+    if (msgContainer) {
+      msgContainer.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">${message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+    }
+  }
 
 if (registerForm) {
   registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
     const formData = {
       teamName: document.getElementById('teamName')?.value,
-      secondFirstName: document.getElementById('secondFirstName')?.value,
-      secondLastName: document.getElementById('secondLastName')?.value,
-      secondEmail: document.getElementById('secondEmail')?.value,
-      secondDateOfBirth: document.getElementById('secondDateOfBirth')?.value
+      emailTeammate: document.getElementById('emailTeammate')?.value,
     };
 
+    const msgContainer = document.getElementById('message-container');
+
     // Controleer op nulls
-    if (!formData.teamName || !formData.secondFirstName || !formData.secondLastName ||
-        !formData.secondEmail || !formData.secondDateOfBirth) {
+    if (!formData.teamName || !formData.emailTeammate) {
       console.error('Alle velden moeten ingevuld zijn!');
       return;
     }
 
+    // wissen van mogelijks vorige bericht
+    if (msgContainer) msgContainer.innerHTML = '';
+    const currentUserId = localStorage.getItem('userId');
+
     try {
       const response = await fetch('/api/new_team', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+        'X-User-ID': currentUserId},
         body: JSON.stringify(formData)
       });
 
@@ -36,9 +45,8 @@ if (registerForm) {
         // Redirect naar jouwTeam pagina
         window.location.href = '/jouwTeam';
       } else {
-        const msgContainer = document.getElementById('message-container');
         if (msgContainer) {
-          msgContainer.innerHTML = `<div class="alert alert-danger">${data.message || 'Er is iets misgegaan.'}</div>`;
+          showMessage(data.error || 'Er is iets misgegaan.', 'danger');
         }
       }
     } catch (err) {
