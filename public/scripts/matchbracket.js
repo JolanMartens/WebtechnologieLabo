@@ -12,3 +12,13 @@ async function loadBracket() {
       Team ${match.team1_id} vs Team ${match.team2_id}`);
   });
 }
+
+async function generateMatches() {
+  const res = await fetch("/api/generate_matches_for_existing", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" }
+  });
+
+  const data = await res.json();
+  console.log("Matches created:", data.created);
+}
