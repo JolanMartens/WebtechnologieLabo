@@ -9,12 +9,13 @@ function fillMatchesTable(matches) {
     let cell2 = row.insertCell(1);
     let cell3 = row.insertCell(2);
 
-    // Replace IDs with names if your API returns them, otherwise show IDs
-    cell1.innerHTML = matches[i].team1_name || matches[i].team1_id || '—';
-    cell2.innerHTML = matches[i].team2_name || matches[i].team2_id || '—';
+    // Correcte match-data structuur
+    cell1.innerHTML = matches[i].teamA?.teamName || '—';
+    cell2.innerHTML = matches[i].teamB?.teamName || '—';
     cell3.innerHTML = `${matches[i].scoreA ?? 0} - ${matches[i].scoreB ?? 0}`;
   }
 }
+
 
 // Clear the table rows except header
 function clearMatchesTable() {
