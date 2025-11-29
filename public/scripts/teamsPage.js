@@ -35,7 +35,8 @@ async function initTeamsTable() {
     const response = await fetch("/api/get_teams_with_players");
     const teams = await response.json();
     console.log(teams);
-    fillTable(teams)
+    clearTable();
+    fillTable(teams);
 }
 
 async function sortByTeamName() {
