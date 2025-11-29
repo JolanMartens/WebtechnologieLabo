@@ -56,8 +56,9 @@ block content
                             input#editEmail.form-control(type="email" required)
                         .mb-3
                             label.form-label Team
-                            input#editTeam.form-control(type="text" required)
-                            // TODO: verander team van speler
+                            select#editTeam.form-select(type="text" required)
+                                option(selected value=null) null
+
                 .modal-footer
                     button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Annuleren
                     button.btn.btn-primary#saveChangesBtn(type="button") Opslaan
