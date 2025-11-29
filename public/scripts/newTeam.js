@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const makeTeamButton = document.getElementById('makeTeam');
   const teamForm = document.getElementById('team-form');
   const refreshTeamMateList = document.getElementById('refresh-team-list');
-  const registerForm = document.querySelector('form[action="/api/new_player"]');
+  const registerForm = document.getElementById('registerForm');
 
   // ---- Registratie form submission ----
   if (registerForm) {
