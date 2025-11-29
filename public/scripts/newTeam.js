@@ -2,67 +2,51 @@ document.addEventListener('DOMContentLoaded', () => {
   const makeTeamButton = document.getElementById('makeTeam');
   const teamForm = document.getElementById('team-form');
   const refreshTeamMateList = document.getElementById('refresh-team-list');
-  const registerForm = document.querySelector('form[action="/api/new_player"]');
+  const registerForm = document.getElementById('registerForm');
 
-  // ---- Registratie form submission ----
-  if (registerForm) {
-    registerForm.addEventListener('submit', async (e) => {
-      e.preventDefault(); // voorkom standaard submit
-
-      // Form data ophalen
-      const formData = {
-        firstName: document.getElementById('firstName').value,
-        lastName: document.getElementById('lastName').value,
-        email: document.getElementById('email').value,
-        dateOfBirth: document.getElementById('dateOfBirth').value,
-        password: document.getElementById('password').value
-      };
-
-      try {
-        const response = await fetch('/api/new_player', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-          // Gegevens opslaan in localStorage
-          localStorage.setItem('isLoggedIn', 'true');
-          localStorage.setItem('userEmail', data.player.email);
-          localStorage.setItem('userFirstName', data.player.firstName);
-          localStorage.setItem('userLastName', data.player.lastName);
-          localStorage.setItem('userId', data.player._id);
-
-          // Redirect naar mijnTeam pagina
-          window.location.href = '/mijnTeam';
-        } else {
-          console.error('Fout bij het aanmaken van speler:', data.message || 'Onbekende fout');
-        }
-      } catch (error) {
-        console.error('Register error:', error);
-      }
-    });
-  }
-
-  // ---- Make new team button logic ----
-  if (makeTeamButton && teamForm) {
-    makeTeamButton.addEventListener('click', async () => {
-      console.log("Make New Team button pressed");
-      teamForm.classList.toggle('visually-hidden');
-      if (!teamForm.classList.contains('visually-hidden')) {
-        await fillDropdown();
-      }
-    });
-  }
-
-  // ---- Refresh dropdown button ----
-  if (refreshTeamMateList) {
-    refreshTeamMateList.onclick = async () => {
-      await fillDropdown();
+if (registerForm) {
+  registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = {
+      teamName: document.getElementById('teamName')?.value,
+      secondFirstName: document.getElementById('secondFirstName')?.value,
+      secondLastName: document.getElementById('secondLastName')?.value,
+      secondEmail: document.getElementById('secondEmail')?.value,
+      secondDateOfBirth: document.getElementById('secondDateOfBirth')?.value
     };
-  }
+
+    // Controleer op nulls
+    if (!formData.teamName || !formData.secondFirstName || !formData.secondLastName ||
+        !formData.secondEmail || !formData.secondDateOfBirth) {
+      console.error('Alle velden moeten ingevuld zijn!');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/new_team', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+      console.log('Response new team:', data);
+
+      if (response.ok && data.success) {
+        // Redirect naar jouwTeam pagina
+        window.location.href = '/jouwTeam';
+      } else {
+        const msgContainer = document.getElementById('message-container');
+        if (msgContainer) {
+          msgContainer.innerHTML = `<div class="alert alert-danger">${data.message || 'Er is iets misgegaan.'}</div>`;
+        }
+      }
+    } catch (err) {
+      console.error('Error bij maken team:', err);
+    }
+  });
+}
+
 });
 
 // ---- Fetch spelerslijst ----
