@@ -406,6 +406,7 @@ app.post('/api/new_team', async (req, res) => {
     const db = await getDatabase();
     const teamsCollection = db.collection('teams');
     const playersCollection = db.collection('players');
+    const matchesCollection = db.collection('matches');
 
     // 1. Check if team name already exists
     const existingTeam = await teamsCollection.findOne({ teamName: teamName.trim() });
@@ -413,7 +414,7 @@ app.post('/api/new_team', async (req, res) => {
       return res.status(400).json({ error: 'Team name already in use' });
     }
 
-    // 2. Get current logged-in user from cookie
+    // 2. Get current logged-in user
     const currentUserId = getCookie(req, 'userId');
     if (!currentUserId) {
       return res.status(401).json({ error: 'Not logged in' });
@@ -451,6 +452,33 @@ app.post('/api/new_team', async (req, res) => {
     const secondResult = await playersCollection.insertOne(secondPlayer);
 
     await sendInviteEmail(secondEmail, secondFirstName, teamName, currentUser.firstName);
+
+    // 6. Balanced random assignment
+    const gameCounts = await matchesCollection.aggregate([
+      { $group: { _id: "$teamAId", games: { $sum: 1 } } },
+      { $unionWith: {
+          coll: "matches",
+          pipeline: [
+            { $group: { _id: "$teamBId", games: { $sum: 1 } } }
+          ]
+      }}
+    ]).toArray();
+
+    const countsMap = {};
+    gameCounts.forEach(c => countsMap[c._id.toString()] = c.games);
+
+    const opponents = await teamsCollection.find({ _id: { $ne: teamId } }).toArray();
+    opponents.sort((a, b) => (countsMap[a._id.toString()] || 0) - (countsMap[b._id.toString()] || 0));
+
+    if (opponents.length > 0) {
+      const opponent = opponents[0]; // team with fewest games
+      await matchesCollection.insertOne({
+        teamAId: teamId,
+        teamBId: opponent._id,
+        scoreA: 0,
+        scoreB: 0,
+      });
+    }
 
     res.status(201).json({
       success: true,
@@ -611,4 +639,66 @@ app.delete('/api/admin/delete_team/:id', async (req, res) => {
     res.json({ success: true, message: 'team deleted' });
 
 
+});
+
+app.post('/api/update_match_score', async (req, res) => {
+  try {
+    const { matchId, scoreA, scoreB } = req.body;
+    const db = await getDatabase();
+    const matchesCollection = db.collection('matches');
+    const teamsCollection = db.collection('teams');
+
+    const match = await matchesCollection.findOne({ _id: new ObjectId(matchId) });
+    if (!match) return res.status(404).json({ error: 'Match not found' });
+
+    // Update match scores
+    await matchesCollection.updateOne(
+      { _id: match._id },
+      { $set: { scoreA, scoreB } }
+    );
+
+    // Update team scores
+    await teamsCollection.updateOne(
+      { _id: match.teamAId },
+      { $inc: { score: scoreA } }
+    );
+    await teamsCollection.updateOne(
+      { _id: match.teamBId },
+      { $inc: { score: scoreB } }
+    );
+
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update match score', details: error.message });
+  }
+});
+
+app.get('/api/get_matches', async (req, res) => {
+  try {
+    const db = await getDatabase();
+    const matches = await db.collection('matches').aggregate([
+      {
+        $lookup: {
+          from: 'teams',
+          localField: 'teamAId',
+          foreignField: '_id',
+          as: 'teamA'
+        }
+      },
+      { $unwind: '$teamA' },
+      {
+        $lookup: {
+          from: 'teams',
+          localField: 'teamBId',
+          foreignField: '_id',
+          as: 'teamB'
+        }
+      },
+      { $unwind: '$teamB' }
+    ]).toArray();
+
+    res.json(matches);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch matches', details: error.message });
+  }
 });
