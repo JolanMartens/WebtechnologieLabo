@@ -799,3 +799,33 @@ app.post('/api/generate_matches_for_existing', async (req, res) => {
   }
 });
 
+
+
+app.put('/api/match/:id/update_wedstrijdscore', async (req, res) => {
+    try {
+        const matchId = req.params.id;
+        const { scoreA, scoreB } = req.body; 
+
+        const db = await getDatabase();
+        const matchesCollection = db.collection('matches');
+        const teamsCollection = db.collection('teams');
+
+        const match = await matchesCollection.findOne({ _id: new ObjectId(matchId) });
+        if (!match) return res.status(404).json({ error: "Match not found" });
+
+        // update match scores
+        await matchesCollection.updateOne(
+            { _id: new ObjectId(matchId) },
+            { $set: { scoreA, scoreB } }
+        );
+
+        // optional: update team totals if needed
+        if (scoreA != null) await teamsCollection.updateOne({ _id: match.teamAId }, { $set: { score: scoreA } });
+        if (scoreB != null) await teamsCollection.updateOne({ _id: match.teamBId }, { $set: { score: scoreB } });
+
+        res.json({ success: true, message: "Match scores updated" });
+    } catch (error) {
+        console.error("Error updating match scores:", error);
+        res.status(500).json({ error: "Failed to update match scores" });
+    }
+});

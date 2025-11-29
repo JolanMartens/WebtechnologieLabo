@@ -252,3 +252,89 @@ document.addEventListener("click", async (e) => {
     }
 });
 
+
+
+async function updateMatchScore(matchId) {
+    const scoreA = parseInt(document.getElementById(`scoreA-${matchId}`).value) || 0;
+    const scoreB = parseInt(document.getElementById(`scoreB-${matchId}`).value) || 0;
+
+    try {
+        const res = await fetch(`/api/match/${matchId}/update_wedstrijdscore`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ scoreA, scoreB })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            alert("Failed to update match score: " + data.error);
+            return;
+        }
+
+        alert("Match score updated!");
+        initMatchesTable(); // refresh table
+    } catch (err) {
+        console.error(err);
+        alert("Error updating match score");
+    }
+}
+
+
+
+async function loadMatches() {
+    try {
+        const response = await fetch("/api/get_matches");
+        const matches = await response.json();
+
+        const table = document.getElementById("WedstrijdScore");
+        table.innerHTML = "";
+
+        matches.forEach(match => {
+            const tr = document.createElement("tr");
+
+            tr.innerHTML = `
+                <td>${match.teamA?.teamName || '—'}</td>
+                <td>${match.teamB?.teamName || '—'}</td>
+                <td>
+                    <input type="number" id="scoreA-${match._id}" value="${match.scoreA ?? 0}" style="width:60px">
+                    -
+                    <input type="number" id="scoreB-${match._id}" value="${match.scoreB ?? 0}" style="width:60px">
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="updateMatchScore('${match._id}')">Opslaan</button>
+                </td>
+            `;
+
+            table.appendChild(tr);
+        });
+    } catch (err) {
+        console.error("Error loading matches:", err);
+    }
+}
+
+// Functie om match scores te updaten
+async function updateMatchScore(matchId) {
+    const scoreA = parseInt(document.getElementById(`scoreA-${matchId}`).value) || 0;
+    const scoreB = parseInt(document.getElementById(`scoreB-${matchId}`).value) || 0;
+
+    try {
+        const res = await fetch(`/api/match/${matchId}/update_score`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ scoreA, scoreB })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            alert("Fout bij updaten van match score: " + data.error);
+            return;
+        }
+
+        alert("Match score succesvol bijgewerkt!");
+        loadMatches();
+    } catch (err) {
+        console.error(err);
+        alert("Error updating match score");
+    }
+}
+document.addEventListener("DOMContentLoaded", loadMatches);
