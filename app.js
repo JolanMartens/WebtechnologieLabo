@@ -71,6 +71,42 @@ async function sendInviteEmail(toEmail, firstName, teamName, firstNameTeammate) 
     }
 }
 
+async function sendRegisterEmail(toEmail, firstName) {
+    const url = "https://api.brevo.com/v3/smtp/email";
+
+    const options = {
+        method: "POST",
+        headers: {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "api-key": process.env.BREVO_API_KEY
+        },
+        body: JSON.stringify({
+            sender: { email: process.env.SENDER_EMAIL, name: "Gent Tennis Admin" },
+            to: [{ email: toEmail, name: firstName }],
+            subject: `Inschrijving Dubbelspeltoernooi Gent`,
+            htmlContent: `
+                <html>
+                    <body>
+                        <h1>Hallo ${firstName},</h1>
+                        <p>U hebt u zonet ingeschreven voor het dubbelspeltoernooi van Gent.</p>
+                        <p>Check zeker onze website voor meer info en bij verdere vragen contacteer ons via <a href="mailto:info@dubbelspelgent.com">info@dubbelspelgent.com</a>.</p>
+                        <p><strong>Veel tennis plezier!!!</strong></p>
+                        <a href="https://webtechnologie-labo.vercel.app"> Klik hier om naar onze site te gaan.</a>
+                    </body>
+                </html>
+            `
+        })
+    };
+
+    try {
+        await fetch(url, options);
+        console.log(`Email sent to ${toEmail}`);
+    } catch (error) {
+        console.error("Fetch Error:", error);
+    }
+}
+
 // check if user is Admin
 async function requireAdmin(req, res, next) {
     try {
@@ -273,6 +309,8 @@ app.post('/api/new_player', async function(req, res) {
             httpOnly: false,
             path: '/'
         });
+
+        await sendRegisterEmail(email, firstName);
 
         res.json({
             success: true,
