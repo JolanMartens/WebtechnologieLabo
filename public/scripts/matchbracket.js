@@ -13,6 +13,12 @@ async function loadBracket() {
   });
 }
 
+/* to reload matches fetch("/api/generate_matches_for_existing", { method: "POST" })
+  .then(r => r.json())
+  .then(console.log);
+  */
+
+
 async function generateMatches() {
   const res = await fetch("/api/generate_matches_for_existing", {
     method: "POST",
