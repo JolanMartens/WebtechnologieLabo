@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     getPlayerList();
+    loadTeams();
+    loadMatches();
 
     document.getElementById('searchInput').addEventListener('keyup', filterTable);
-
     document.getElementById('saveChangesBtn').addEventListener('click', savePlayerChanges);
 });
+
 
 let allPlayers = [];
 
@@ -118,9 +120,7 @@ function filterTable() {
 }
 
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadTeams();  
-});
+
 
 async function loadTeams() {
     try {
@@ -272,14 +272,12 @@ async function updateMatchScore(matchId) {
         }
 
         alert("Match score updated!");
-        initMatchesTable(); // refresh table
+        loadMatches(); 
     } catch (err) {
         console.error(err);
         alert("Error updating match score");
     }
 }
-
-
 
 async function loadMatches() {
     try {
@@ -311,30 +309,3 @@ async function loadMatches() {
         console.error("Error loading matches:", err);
     }
 }
-
-// Functie om match scores te updaten
-async function updateMatchScore(matchId) {
-    const scoreA = parseInt(document.getElementById(`scoreA-${matchId}`).value) || 0;
-    const scoreB = parseInt(document.getElementById(`scoreB-${matchId}`).value) || 0;
-
-    try {
-        const res = await fetch(`/api/match/${matchId}/update_score`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ scoreA, scoreB })
-        });
-
-        const data = await res.json();
-        if (!res.ok) {
-            alert("Fout bij updaten van match score: " + data.error);
-            return;
-        }
-
-        alert("Match score succesvol bijgewerkt!");
-        loadMatches();
-    } catch (err) {
-        console.error(err);
-        alert("Error updating match score");
-    }
-}
-document.addEventListener("DOMContentLoaded", loadMatches);
