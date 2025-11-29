@@ -25,7 +25,7 @@ function clearMatchesTable() {
 
 // Initialize the table
 async function initMatchesTable() {
-  const response = await fetch("/api/matches");
+  const response = await fetch("/api/get_matches");
   const matches = await response.json();
   console.log(matches);
   clearMatchesTable();

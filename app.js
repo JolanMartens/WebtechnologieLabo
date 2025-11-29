@@ -758,15 +758,3 @@ app.post('/api/generate_matches_for_existing', async (req, res) => {
   }
 });
 
-app.get('/api/matches', async (req, res) => {
-  try {
-    const db = await getDatabase();
-    const matchesCollection = db.collection('matches');
-    const matches = await matchesCollection.find({}).toArray();
-
-    res.json(matches);
-  } catch (error) {
-    console.error("Error fetching matches:", error);
-    res.status(500).json({ error: "Failed to fetch matches", details: error.message });
-  }
-});
