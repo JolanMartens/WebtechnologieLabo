@@ -130,7 +130,7 @@ async function requireAdmin(req, res, next) {
     }
 }
 
-app.delete('/api/admin/delete_player/:id', async (req, res) => {
+app.delete('/api/admin/delete_player/:id', requireAdmin, async (req, res) => {
     const userId = req.params.id;
     const db = await getDatabase();
 
@@ -142,8 +142,9 @@ app.delete('/api/admin/delete_player/:id', async (req, res) => {
 
 });
 
-app.put('/api/admin/update_player/:id', async (req, res) => {
+app.put('/api/admin/update_player/:id', requireAdmin, async (req, res) => {
     try{
+
         const playerId = req.params.id;
         const { firstName, lastName, email, teamId } = req.body;
 
@@ -670,7 +671,7 @@ app.get('/api/get_my_team', async (req, res) => {
 });
 
 
-app.delete('/api/admin/delete_team/:id', async (req, res) => {
+app.delete('/api/admin/delete_team/:id', requireAdmin, async (req, res) => {
     const teamId = req.params.id;
     const db = await getDatabase();
 
