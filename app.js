@@ -847,8 +847,9 @@ app.delete('/api/leave_team', async (req, res) => {
         }
 
         const db = await getDatabase();
-        const user = await db.collection('players').findOne({ _id: new ObjectId(userId) });
+        console.log("DB connected");
 
+        const user = await db.collection('players').findOne({ _id: new ObjectId(userId) });
         console.log("User found =", user);
 
         if (!user) {
@@ -861,10 +862,11 @@ app.delete('/api/leave_team', async (req, res) => {
 
         console.log("Removing player from teamId =", user.teamId);
 
-        await db.collection('players').updateOne(
+        const result = await db.collection('players').updateOne(
             { _id: new ObjectId(userId) },
             { $set: { teamId: null, role: "member" } }
         );
+        console.log("Update result =", result);
 
         return res.json({ success: true, message: "Left team" });
 
