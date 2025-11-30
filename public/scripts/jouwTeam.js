@@ -28,9 +28,9 @@ console.log("jouwTeam.js is geladen");
 
 
 
-document.addEventListener("DOMContentLoaded", () => {
-    const btn = document.getElementById("leaveTeamBtn");
+const btn = document.getElementById("leaveTeamBtn");
 
+if (btn) {
     btn.addEventListener("click", async () => {
         const response = await fetch("/api/leave_team", {
             method: "DELETE"
@@ -45,4 +45,4 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Kon team niet verlaten: " + result.message);
         }
     });
-});
+}
