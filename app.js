@@ -834,28 +834,39 @@ app.put('/api/match/:id/update_wedstrijdscore', async (req, res) => {
         res.status(500).json({ error: "Failed to update match scores" });
     }
 });
+
 app.delete('/api/leave_team', async (req, res) => {
     try {
-        const userId = req.session.userId; // of hoe jij je gebruiker opslaat
-        const db = await getDatabase();
+        console.log("LEAVE TEAM ROUTE HIT");
+
+        const userId = req.session.userId;
+        console.log("session.userId =", userId);
 
         if (!userId) {
             return res.status(401).json({ success: false, message: "Not logged in" });
         }
 
+        const db = await getDatabase();
         const user = await db.collection('players').findOne({ _id: new ObjectId(userId) });
 
-        if (!user || !user.teamId) {
+        console.log("User found =", user);
+
+        if (!user) {
+            return res.json({ success: false, message: "User not found" });
+        }
+
+        if (!user.teamId) {
             return res.json({ success: false, message: "You are not in a team" });
         }
 
-        // Remove player from the team
+        console.log("Removing player from teamId =", user.teamId);
+
         await db.collection('players').updateOne(
             { _id: new ObjectId(userId) },
             { $set: { teamId: null, role: "member" } }
         );
 
-        res.json({ success: true, message: "Left team" });
+        return res.json({ success: true, message: "Left team" });
 
     } catch (error) {
         console.error("Error leaving team:", error);
