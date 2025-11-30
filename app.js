@@ -839,7 +839,7 @@ app.delete('/api/leave_team', async (req, res) => {
   try {
     console.log("LEAVE TEAM ROUTE HIT");
 
-    const userId = req.session.userId;
+    const userId = getCookie(req, 'userId');
     if (!userId) {
       return res.status(401).json({ success: false, message: "Not logged in" });
     }
