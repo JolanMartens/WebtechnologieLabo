@@ -836,42 +836,34 @@ app.put('/api/match/:id/update_wedstrijdscore', async (req, res) => {
 });
 
 app.delete('/api/leave_team', async (req, res) => {
-    try {
-        console.log("LEAVE TEAM ROUTE HIT");
+  try {
+    console.log("LEAVE TEAM ROUTE HIT");
 
-        const userId = req.session.userId;
-        console.log("session.userId =", userId);
-
-        if (!userId) {
-            return res.status(401).json({ success: false, message: "Not logged in" });
-        }
-
-        const db = await getDatabase();
-        console.log("DB connected");
-
-        const user = await db.collection('players').findOne({ _id: new ObjectId(userId) });
-        console.log("User found =", user);
-
-        if (!user) {
-            return res.json({ success: false, message: "User not found" });
-        }
-
-        if (!user.teamId) {
-            return res.json({ success: false, message: "You are not in a team" });
-        }
-
-        console.log("Removing player from teamId =", user.teamId);
-
-        const result = await db.collection('players').updateOne(
-            { _id: new ObjectId(userId) },
-            { $set: { teamId: null, role: "member" } }
-        );
-        console.log("Update result =", result);
-
-        return res.json({ success: true, message: "Left team" });
-
-    } catch (error) {
-        console.error("Error leaving team:", error);
-        res.status(500).json({ success: false, message: "Failed to leave team" });
+    const userId = req.session.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Not logged in" });
     }
+
+    const db = await getDatabase();
+    const user = await db.collection('players').findOne({ _id: new ObjectId(userId) });
+
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    if (!user.teamId) {
+      return res.json({ success: false, message: "You are not in a team" });
+    }
+
+    await db.collection('players').updateOne(
+      { _id: new ObjectId(userId) },
+      { $set: { teamId: null, role: "member" } }
+    );
+
+    return res.json({ success: true, message: "Left team" });
+
+  } catch (error) {
+    // stuur de fout terug naar frontend
+    res.status(500).json({ success: false, message: "Failed to leave team", error: error.message });
+  }
 });
