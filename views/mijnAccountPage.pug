@@ -8,6 +8,30 @@ block content
                 .p-0.py-5.d-flex.justify-content-center.align-self-center
                     #test
                     .text-white.text#user-info
+                button.btn.btn-primary(onclick="openEditModal()") edit
 
+
+
+
+    #editModal.modal.fade(tabindex="-1" aria-hidden="true")
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5.modal-title Speler Aanpassen
+                    button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+                .modal-body
+                    .form#editForm
+                        input#editId(type="hidden")
+                        .mb-3
+                            label.form-label Voornaam
+                            input#editFirstName.form-control(type="text" required)
+                        .mb-3
+                            label.form-label Achternaam
+                            input#editLastName.form-control(type="text" required).mb-3
+                            label.form-label Email
+                            input#editEmail.form-control(type="email" required)
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Annuleren
+                    button.btn.btn-primary#saveChangesBtn(type="button") Opslaan
 block scripts
     script(src="/scripts/mijnAccountPage.js")

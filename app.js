@@ -181,6 +181,48 @@ app.put('/api/admin/update_player/:id', requireAdmin, async (req, res) => {
 
 });
 
+app.put('/api/update_my_account', async (req, res) => {
+    try {
+        const userId = getCookie(req, 'userId');
+
+        if (!userId) {
+            return res.status(401).json({ success: false, error: 'Niet ingelogd' });
+        }
+
+        const { firstName, lastName, email } = req.body;
+
+        const playerIdFromBody = req.body.id;
+
+        if (playerIdFromBody !== userId) {
+            return res.status(403).json({ success: false, error: 'Geen toestemming' });
+        }
+
+        const db = await getDatabase();
+        const playersCollection = db.collection('players');
+
+        const updatedPlayer = {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+        };
+
+        const result = await playersCollection.updateOne(
+            { _id: new ObjectId(userId) },
+            { $set: updatedPlayer }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ success: false, error: 'Speler niet gevonden' });
+        }
+
+        return res.json({ success: true, message: 'Account succesvol bijgewerkt.' });
+
+    } catch (error) {
+        console.error("Updating player account error:", error);
+        res.status(500).json({ success: false, error: 'error in update_my_account' });
+    }
+});
+
 // Render pages with PUG
 app.get('/', (req, res) => {
     res.render('index', { title: 'Home - Tennis dubbelspel tornooi' });
@@ -577,6 +619,8 @@ function getCookie(req, name) {
   const match = cookies.split(';').find(c => c.trim().startsWith(name + '='));
   return match ? match.split('=')[1] : null;
 }
+
+
 
 
 app.get('/teamButton', async (req, res) => {
