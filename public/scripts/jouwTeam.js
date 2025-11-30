@@ -47,6 +47,7 @@ if (btn) {
             if (result.success) {
                 alert("Je bent uit het team gestapt.");
                 window.location.reload();
+                window.location.href = '/newTeam';
             } else {
                 alert("Kon team niet verlaten: " + result.message);
             }
