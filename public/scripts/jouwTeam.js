@@ -24,6 +24,8 @@ async function showMyTeam() {
 }
 
 showMyTeam();
+console.log("jouwTeam.js is geladen");
+
 
 
 document.addEventListener("DOMContentLoaded", () => {
