@@ -28,21 +28,31 @@ console.log("jouwTeam.js is geladen");
 
 
 
+console.log("jouwTeam.js is geladen");
+
 const btn = document.getElementById("leaveTeamBtn");
+console.log("Knop gevonden:", btn);
 
 if (btn) {
     btn.addEventListener("click", async () => {
-        const response = await fetch("/api/leave_team", {
-            method: "DELETE"
-        });
+        try {
+            const response = await fetch("/api/leave_team", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" }
+            });
 
-        const result = await response.json();
+            const result = await response.json();
+            console.log("Response:", result);
 
-        if (result.success) {
-            alert("Je bent uit het team gestapt.");
-            window.location.reload();
-        } else {
-            alert("Kon team niet verlaten: " + result.message);
+            if (result.success) {
+                alert("Je bent uit het team gestapt.");
+                window.location.reload();
+            } else {
+                alert("Kon team niet verlaten: " + result.message);
+            }
+        } catch (err) {
+            console.error("Fout bij fetch:", err);
+            alert("Er ging iets mis bij het verlaten van het team.");
         }
     });
 }
