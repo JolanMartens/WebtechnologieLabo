@@ -834,3 +834,31 @@ app.put('/api/match/:id/update_wedstrijdscore', async (req, res) => {
         res.status(500).json({ error: "Failed to update match scores" });
     }
 });
+app.delete('/api/leave_team', async (req, res) => {
+    try {
+        const userId = req.session.userId; // of hoe jij je gebruiker opslaat
+        const db = await getDatabase();
+
+        if (!userId) {
+            return res.status(401).json({ success: false, message: "Not logged in" });
+        }
+
+        const user = await db.collection('players').findOne({ _id: new ObjectId(userId) });
+
+        if (!user || !user.teamId) {
+            return res.json({ success: false, message: "You are not in a team" });
+        }
+
+        // Remove player from the team
+        await db.collection('players').updateOne(
+            { _id: new ObjectId(userId) },
+            { $set: { teamId: null, role: "member" } }
+        );
+
+        res.json({ success: true, message: "Left team" });
+
+    } catch (error) {
+        console.error("Error leaving team:", error);
+        res.status(500).json({ success: false, message: "Failed to leave team" });
+    }
+});

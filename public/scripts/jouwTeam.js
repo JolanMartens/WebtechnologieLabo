@@ -24,3 +24,23 @@ async function showMyTeam() {
 }
 
 showMyTeam();
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("leaveTeamBtn");
+
+    btn.addEventListener("click", async () => {
+        const response = await fetch("/api/leave_team", {
+            method: "DELETE"
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert("Je bent uit het team gestapt.");
+            window.location.reload();
+        } else {
+            alert("Kon team niet verlaten: " + result.message);
+        }
+    });
+});
